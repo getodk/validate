@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project name="odk-validate" default="package">
+	<target name="init" description="set classpath and make needed directories">
+		<path id="classpath">
+			<fileset dir="lib/" includes="*.jar"/>
+		</path>
+		<mkdir dir="bin/"/>
+		<mkdir dir="dist/"/>
+	</target>
+	<target name="clean" description="delete dist and bin directories">
+		<delete dir="dist/"/>
+		<delete dir="bin/"/>
+	</target>
+	<target name="compile" depends="clean,init" description="compile the source">
+		<javac srcdir="src/" destdir="bin/" classpathref="classpath" debug="true" debuglevel="lines,source"/>
+	</target>
+	<target name="package" depends="compile" description="package source and binary into jar">
+		<jar destfile="dist/ODK Validate.jar">
+			<fileset dir="bin/" includes="**/*.class"/>
+			<zipfileset src="./lib/javarosa.jar" includes="**/*.java **/*.class"/>
+			<zipfileset src="./lib/kxml2-2.3.0.jar" includes="**/*.java **/*.class"/>
+			<manifest>
+				<attribute name="Main-Class" value="org.odk.validate.FormValidator"/>
+			</manifest>
+		</jar>
+	</target>
+</project>

@@ -1,4 +1,4 @@
-package org.odk.validator;
+package org.odk.validate;
 
 import org.javarosa.core.model.FormDef;
 import org.javarosa.xform.util.XFormUtils;
@@ -89,8 +89,7 @@ public class FormValidator implements ActionListener {
     private void addWidgets(JPanel panel) {
         panel.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
-        c.insets = new Insets(0, 10, 0, 10);
-        
+
         // Create widgets.
         formPath = new JTextField(40);
 
@@ -99,38 +98,48 @@ public class FormValidator implements ActionListener {
         chooseFileButton.addActionListener(this);
 
         validatorOutput = new JTextArea();
+        validatorOutput.setEditable(false);
+
         validatorOutputScrollPane = new JScrollPane(validatorOutput);
         validatorOutputScrollPane.setPreferredSize(new Dimension(640, 480));
         
-        validatorOutput.setEditable(false);
-
-        validateButton = new JButton("Validate");
+        validateButton = new JButton("Validate Again");
         validateButton.addActionListener(this);
 
+
+        c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
         c.gridy = 1;
+        c.insets = new Insets(0, 7, 0, 0);
         panel.add(formPath, c);
+
         c.gridx = 2;
         c.gridy = 1;
+        c.insets = new Insets(10, 0, 10, 7);
         panel.add(chooseFileButton, c);
+
         c.gridx = 0;
         c.gridy = 2;
         c.gridwidth = 3;
-        c.fill = GridBagConstraints.HORIZONTAL;
+        c.insets = new Insets(0, 10, 10, 10);
         panel.add(validatorOutputScrollPane, c);
-        c.gridx = 2;
+        
+        c.gridx = 0;
         c.gridy = 3;
-        c.gridwidth = 1;
+        c.gridwidth = 3;
         panel.add(validateButton, c);
+
+
     }
 
 
     // @Override
     public void actionPerformed(ActionEvent e) {
+        
         if (e.getSource() == validateButton) {
             validatorOutput.setText("");
             validate(formPath.getText());
-        }
+          }
 
         if (e.getSource() == chooseFileButton) {
             int returnVal = fileChooser.showOpenDialog(validatorFrame);
@@ -139,6 +148,8 @@ public class FormValidator implements ActionListener {
                 File file = fileChooser.getSelectedFile();
                 formPath.setText(file.getPath());
             }
+            validatorOutput.setText("");
+            validate(formPath.getText());
         }
     }
 
@@ -148,7 +159,7 @@ public class FormValidator implements ActionListener {
         try {
             fis = new FileInputStream(new File(path));
         } catch (FileNotFoundException e) {
-            System.err.println("File not found. Please try again.");
+            System.err.println("Please choose a file before attempting to validate.");
             return;
         }
         try {
