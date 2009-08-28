@@ -1,3 +1,19 @@
+/*
+ * Copyright (C) 2009 Google Inc.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
 package org.odk.validate;
 
 import org.javarosa.core.model.FormDef;
@@ -24,7 +40,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
-
+/**
+ * Uses the javarosa-core library to process a form and show errors, if any.
+ * 
+ * @author Adam Lerer (adam.lerer@gmail.com)
+ * @author Yaw Anokwa (yanokwa@gmail.com)
+ */
 public class FormValidator implements ActionListener {
 
     JFrame validatorFrame;
@@ -102,7 +123,7 @@ public class FormValidator implements ActionListener {
 
         validatorOutputScrollPane = new JScrollPane(validatorOutput);
         validatorOutputScrollPane.setPreferredSize(new Dimension(640, 480));
-        
+
         validateButton = new JButton("Validate Again");
         validateButton.addActionListener(this);
 
@@ -123,7 +144,7 @@ public class FormValidator implements ActionListener {
         c.gridwidth = 3;
         c.insets = new Insets(0, 10, 10, 10);
         panel.add(validatorOutputScrollPane, c);
-        
+
         c.gridx = 0;
         c.gridy = 3;
         c.gridwidth = 3;
@@ -135,11 +156,11 @@ public class FormValidator implements ActionListener {
 
     // @Override
     public void actionPerformed(ActionEvent e) {
-        
+
         if (e.getSource() == validateButton) {
             validatorOutput.setText("");
             validate(formPath.getText());
-          }
+        }
 
         if (e.getSource() == chooseFileButton) {
             int returnVal = fileChooser.showOpenDialog(validatorFrame);
