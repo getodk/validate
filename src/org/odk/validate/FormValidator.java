@@ -18,6 +18,8 @@ package org.odk.validate;
 
 import org.javarosa.core.model.FormDef;
 import org.javarosa.xform.util.XFormUtils;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -29,6 +31,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -39,6 +42,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
@@ -122,7 +128,7 @@ public class FormValidator implements ActionListener {
         validatorOutput.setEditable(false);
 
         validatorOutputScrollPane = new JScrollPane(validatorOutput);
-        validatorOutputScrollPane.setPreferredSize(new Dimension(640, 480));
+        validatorOutputScrollPane.setPreferredSize(new Dimension(800, 600));
 
         validateButton = new JButton("Validate Again");
         validateButton.addActionListener(this);
@@ -176,6 +182,7 @@ public class FormValidator implements ActionListener {
 
 
     public void validate(String path) {
+
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File(path));
@@ -183,16 +190,30 @@ public class FormValidator implements ActionListener {
             System.err.println("Please choose a file before attempting to validate.");
             return;
         }
+
+        // validate well formed xml
+        System.out.println("Checking XML...");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        DocumentBuilder builder = null;
+        try {
+            builder = factory.newDocumentBuilder();
+            Document document = builder.parse(new File(path));
+        } catch (Exception e) {
+            System.err.println("\n>> XML is invalid. See above for details.");
+            return;
+        }
+
+        // validate form
         try {
             FormDef form = XFormUtils.getFormFromInputStream(fis);
             if (form == null) {
-                System.err.println("Form is invalid. See above for details.");
+                System.err.println("\n>> Form is invalid. See above for details.");
             } else {
-                System.out.println("Form is valid. See above for warnings (if any).");
+                System.out.println("\n>> Form is valid. See above for warnings (if any).");
             }
         } catch (Exception e) {
-            System.err.println("Error parsing form.");
-            e.printStackTrace();
+            System.err.println("\n>> Form is invalid. See above for details.");
         }
     }
 
