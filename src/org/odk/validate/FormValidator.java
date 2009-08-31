@@ -19,7 +19,6 @@ package org.odk.validate;
 import org.javarosa.core.model.FormDef;
 import org.javarosa.xform.util.XFormUtils;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -31,7 +30,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
@@ -44,7 +42,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
