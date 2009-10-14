@@ -12,13 +12,13 @@
 		<delete dir="bin/"/>
 	</target>
 	<target name="compile" depends="clean,init" description="compile the source">
-		<javac srcdir="src/" destdir="bin/" classpathref="classpath" debug="true" debuglevel="lines,source"/>
+		<javac srcdir="src/" destdir="bin/" classpathref="classpath" debug="true" debuglevel="lines,source" source="1.5" target="1.5"/>
 	</target>
 	<target name="package" depends="compile" description="package source and binary into jar">
 		<jar destfile="dist/ODK Validate.jar">
 			<fileset dir="bin/" includes="**/*.class"/>
-			<zipfileset src="./lib/javarosa-core.jar" includes="**/*.java **/*.class"/>
-			<zipfileset src="./lib/kxml2-2.3.0.jar" includes="**/*.java **/*.class"/>
+			<zipfileset src="./lib/javarosa-core.jar" includes="**/*.class"/>
+			<zipfileset src="./lib/kxml2-2.3.0.jar" includes="**/*.class"/>
 			<manifest>
 				<attribute name="Main-Class" value="org.odk.validate.FormValidator"/>
 			</manifest>
