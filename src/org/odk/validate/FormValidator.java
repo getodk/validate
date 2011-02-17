@@ -203,7 +203,7 @@ public class FormValidator implements ActionListener {
             Document document = builder.parse(new File(path));
         } catch (Exception e) {
             validatorOutput.setForeground(Color.RED);
-            System.err.println("\n>> XML is invalid. See above for details.");
+            System.err.println("\n>> XML is invalid. See above the errors.");
             return;
         }
 
@@ -226,7 +226,7 @@ public class FormValidator implements ActionListener {
             } else {
                 System.err.println(e.getMessage());
             }
-            System.err.println(">> XForm is invalid. See above for the error.");
+            System.err.println(">> XForm is invalid. See above for the errors.");
 
         } catch (Exception e) {
             validatorOutput.setForeground(Color.RED);
