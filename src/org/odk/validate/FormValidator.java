@@ -1,27 +1,23 @@
 /*
  * Copyright (C) 2009 Google Inc.
  * 
- * Licensed under the Apache License, Version 2.0 (the "License"); you may not
- * use this file except in compliance with the License. You may obtain a copy of
- * the License at
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
  * 
  * http://www.apache.org/licenses/LICENSE-2.0
  * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
- * License for the specific language governing permissions and limitations under
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
 
 package org.odk.validate;
 
-import org.javarosa.core.model.FormDef;
-import org.javarosa.xform.util.XFormUtils;
-import org.w3c.dom.Document;
-
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -42,6 +38,11 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.javarosa.core.model.FormDef;
+import org.javarosa.xform.parse.XFormParseException;
+import org.javarosa.xform.util.XFormUtils;
+import org.w3c.dom.Document;
 
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
@@ -92,7 +93,6 @@ public class FormValidator implements ActionListener {
      * An OutputStream that writes the output to a text area.
      * 
      * @author alerer@google.com (Adam Lerer)
-     * 
      */
     class JTextAreaOutputStream extends OutputStream {
         private JTextArea textArea;
@@ -105,7 +105,9 @@ public class FormValidator implements ActionListener {
 
         @Override
         public void write(int b) {
-            textArea.append(new String(new byte[] {(byte) (b % 256)}, 0, 1));
+            textArea.append(new String(new byte[] {
+                (byte) (b % 256)
+            }, 0, 1));
         }
     }
 
@@ -124,13 +126,14 @@ public class FormValidator implements ActionListener {
         validatorOutput = new JTextArea();
         validatorOutput.setEditable(false);
         validatorOutput.setLineWrap(true);
+        validatorOutput.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        validatorOutput.setForeground(Color.BLACK);
 
         validatorOutputScrollPane = new JScrollPane(validatorOutput);
         validatorOutputScrollPane.setPreferredSize(new Dimension(800, 600));
 
         validateButton = new JButton("Validate Again");
         validateButton.addActionListener(this);
-
 
         c.fill = GridBagConstraints.HORIZONTAL;
         c.gridx = 0;
@@ -153,7 +156,6 @@ public class FormValidator implements ActionListener {
         c.gridy = 3;
         c.gridwidth = 3;
         panel.add(validateButton, c);
-
 
     }
 
@@ -181,16 +183,18 @@ public class FormValidator implements ActionListener {
 
     public void validate(String path) {
 
+        String error;
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File(path));
         } catch (FileNotFoundException e) {
+            validatorOutput.setForeground(Color.RED);
             System.err.println("Please choose a file before attempting to validate.");
             return;
         }
 
         // validate well formed xml
-        System.out.println("Checking XML...");
+        System.out.println("Checking form...");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         DocumentBuilder builder = null;
@@ -198,21 +202,40 @@ public class FormValidator implements ActionListener {
             builder = factory.newDocumentBuilder();
             Document document = builder.parse(new File(path));
         } catch (Exception e) {
+            validatorOutput.setForeground(Color.RED);
             System.err.println("\n>> XML is invalid. See above for details.");
             return;
         }
 
-        // validate form
+        // validate if the xform can be parsed.
         try {
-            FormDef form = XFormUtils.getFormFromInputStream(fis);
-            if (form == null) {
-                System.err.println("\n>> Form is invalid. See above for details.");
-            } else {
-                System.out.println("\n>> Form is valid. See above for warnings (if any).");
+            FormDef fd = XFormUtils.getFormFromInputStream(fis);
+            if (fd == null) {
+                validatorOutput.setForeground(Color.RED);
+                System.err.println(">> Something broke the parser. Try again.");
+                return;
             }
+            validatorOutput.setForeground(Color.BLUE);
+            System.err.println("\n\n>> Xform is valid! See above for any warnings.");
+
+        } catch (XFormParseException e) {
+            validatorOutput.setForeground(Color.RED);
+
+            if (e.getMessage() == null) {
+                e.printStackTrace();
+            } else {
+                System.err.println(e.getMessage());
+            }
+            System.err.println(">> XForm is invalid. See above for the error.");
+
         } catch (Exception e) {
-            System.err.println("\n>> Form is invalid. See above for details.");
+            validatorOutput.setForeground(Color.RED);
+            if (e.getMessage() != null) {
+                System.err.println(e.getMessage());
+            }
+            e.printStackTrace();
+            System.err.println("\n>> Something broke the parser. See above for a hint.");
+
         }
     }
-
 }
