@@ -123,6 +123,7 @@ public class FormValidator implements ActionListener {
 
         validatorOutput = new JTextArea();
         validatorOutput.setEditable(false);
+        validatorOutput.setLineWrap(true);
 
         validatorOutputScrollPane = new JScrollPane(validatorOutput);
         validatorOutputScrollPane.setPreferredSize(new Dimension(800, 600));

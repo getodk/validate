@@ -17,7 +17,7 @@
 	<target name="package" depends="compile" description="package source and binary into jar">
 		<jar destfile="dist/ODK Validate.jar">
 			<fileset dir="bin/" includes="**/*.class"/>
-			<zipfileset src="./lib/javarosa-core.jar" includes="**/*.class"/>
+			<zipfileset src="./lib/javarosa-libraries.jar" includes="**/*.class"/>
 			<zipfileset src="./lib/kxml2-2.3.0.jar" includes="**/*.class"/>
 			<manifest>
 				<attribute name="Main-Class" value="org.odk.validate.FormValidator"/>
