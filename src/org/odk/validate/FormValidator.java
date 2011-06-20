@@ -215,6 +215,7 @@ public class FormValidator implements ActionListener {
                 System.err.println(">> Something broke the parser. Try again.");
                 return;
             }
+            fd.initialize(true);
             validatorOutput.setForeground(Color.BLUE);
             System.err.println("\n\n>> Xform is valid! See above for any warnings.");
 
