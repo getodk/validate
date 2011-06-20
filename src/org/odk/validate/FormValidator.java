@@ -40,6 +40,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.javarosa.core.model.FormDef;
+import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.xform.parse.XFormParseException;
 import org.javarosa.xform.util.XFormUtils;
 import org.w3c.dom.Document;
@@ -215,6 +216,11 @@ public class FormValidator implements ActionListener {
                 System.err.println(">> Something broke the parser. Try again.");
                 return;
             }
+            
+            // eval context for function handlers
+            fd.setEvaluationContext(new EvaluationContext());
+            
+            // check for runtime errors
             fd.initialize(true);
             validatorOutput.setForeground(Color.BLUE);
             System.err.println("\n\n>> Xform is valid! See above for any warnings.");
