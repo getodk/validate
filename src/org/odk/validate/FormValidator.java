@@ -216,10 +216,10 @@ public class FormValidator implements ActionListener {
                 System.err.println(">> Something broke the parser. Try again.");
                 return;
             }
-            
+
             // eval context for function handlers
             fd.setEvaluationContext(new EvaluationContext());
-            
+
             // check for runtime errors
             fd.initialize(true);
             validatorOutput.setForeground(Color.BLUE);
@@ -227,7 +227,6 @@ public class FormValidator implements ActionListener {
 
         } catch (XFormParseException e) {
             validatorOutput.setForeground(Color.RED);
-
             if (e.getMessage() == null) {
                 e.printStackTrace();
             } else {
@@ -237,10 +236,11 @@ public class FormValidator implements ActionListener {
 
         } catch (Exception e) {
             validatorOutput.setForeground(Color.RED);
-            if (e.getMessage() != null) {
+            if (e.getMessage() == null) {
+                e.printStackTrace();
+            } else {
                 System.err.println(e.getMessage());
             }
-            e.printStackTrace();
             System.err.println("\n>> Something broke the parser. See above for a hint.");
 
         }
