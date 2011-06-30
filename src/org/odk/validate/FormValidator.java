@@ -14,52 +14,32 @@
 
 package org.odk.validate;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.OutputStream;
-import java.io.PrintStream;
-
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.xform.parse.XFormParseException;
 import org.javarosa.xform.util.XFormUtils;
-import org.w3c.dom.Document;
+
+import javax.swing.*;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.*;
 
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
- * 
+ *
  * @author Adam Lerer (adam.lerer@gmail.com)
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
 public class FormValidator implements ActionListener {
 
-    JFrame validatorFrame;
-    JPanel validatorPanel;
-    JTextField formPath;
-    JTextArea validatorOutput;
-    JScrollPane validatorOutputScrollPane;
-    JButton chooseFileButton, validateButton;
-    JFileChooser fileChooser;
+    private final JFrame validatorFrame;
+    private JTextField formPath;
+    private JTextArea validatorOutput;
+    private JButton chooseFileButton;
+    private JButton validateButton;
+    private JFileChooser fileChooser;
 
 
     public static void main(String[] args) {
@@ -69,7 +49,7 @@ public class FormValidator implements ActionListener {
 
     public FormValidator() {
         validatorFrame = new JFrame("ODK Validate");
-        validatorPanel = new JPanel();
+        JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
         // Add the widgets.
@@ -92,11 +72,11 @@ public class FormValidator implements ActionListener {
 
     /**
      * An OutputStream that writes the output to a text area.
-     * 
+     *
      * @author alerer@google.com (Adam Lerer)
      */
     class JTextAreaOutputStream extends OutputStream {
-        private JTextArea textArea;
+        private final JTextArea textArea;
 
 
         public JTextAreaOutputStream(JTextArea textArea) {
@@ -106,8 +86,8 @@ public class FormValidator implements ActionListener {
 
         @Override
         public void write(int b) {
-            textArea.append(new String(new byte[] {
-                (byte) (b % 256)
+            textArea.append(new String(new byte[]{
+                    (byte) (b % 256)
             }, 0, 1));
         }
     }
@@ -130,7 +110,7 @@ public class FormValidator implements ActionListener {
         validatorOutput.setFont(new Font("Monospaced", Font.PLAIN, 14));
         validatorOutput.setForeground(Color.BLACK);
 
-        validatorOutputScrollPane = new JScrollPane(validatorOutput);
+        JScrollPane validatorOutputScrollPane = new JScrollPane(validatorOutput);
         validatorOutputScrollPane.setPreferredSize(new Dimension(800, 600));
 
         validateButton = new JButton("Validate Again");
@@ -182,10 +162,9 @@ public class FormValidator implements ActionListener {
     }
 
 
-    public void validate(String path) {
+    void validate(String path) {
 
-        String error;
-        FileInputStream fis = null;
+        FileInputStream fis;
         try {
             fis = new FileInputStream(new File(path));
         } catch (FileNotFoundException e) {
@@ -195,16 +174,14 @@ public class FormValidator implements ActionListener {
         }
 
         // validate well formed xml
-        System.out.println("Checking form...");
+//        System.out.println("Checking form...");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
-        DocumentBuilder builder = null;
         try {
-            builder = factory.newDocumentBuilder();
-            Document document = builder.parse(new File(path));
+            factory.newDocumentBuilder().parse(new File(path));
         } catch (Exception e) {
             validatorOutput.setForeground(Color.RED);
-            System.err.println("\n>> XML is invalid. See above the errors.");
+            System.err.println("\n\n\n>> XML is invalid. See above for the errors.");
             return;
         }
 
@@ -213,7 +190,7 @@ public class FormValidator implements ActionListener {
             FormDef fd = XFormUtils.getFormFromInputStream(fis);
             if (fd == null) {
                 validatorOutput.setForeground(Color.RED);
-                System.err.println(">> Something broke the parser. Try again.");
+                System.err.println("\n\n\n>> Something broke the parser. Try again.");
                 return;
             }
 
@@ -223,7 +200,7 @@ public class FormValidator implements ActionListener {
             // check for runtime errors
             fd.initialize(true);
             validatorOutput.setForeground(Color.BLUE);
-            System.err.println("\n\n>> Xform is valid! See above for any warnings.");
+            System.err.println("\n\n\n>> Xform is valid! See above for any warnings.");
 
         } catch (XFormParseException e) {
             validatorOutput.setForeground(Color.RED);
@@ -232,7 +209,7 @@ public class FormValidator implements ActionListener {
             } else {
                 System.err.println(e.getMessage());
             }
-            System.err.println(">> XForm is invalid. See above for the errors.");
+            System.err.println("\n\n\n>> XForm is invalid. See above for the errors.");
 
         } catch (Exception e) {
             validatorOutput.setForeground(Color.RED);
@@ -241,7 +218,7 @@ public class FormValidator implements ActionListener {
             } else {
                 System.err.println(e.getMessage());
             }
-            System.err.println("\n>> Something broke the parser. See above for a hint.");
+            System.err.println("\n\n\n>> Something broke the parser. See above for a hint.");
 
         }
     }
