@@ -16,6 +16,10 @@ package org.odk.validate;
 
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.condition.EvaluationContext;
+import org.javarosa.core.model.data.IAnswerData;
+import org.javarosa.core.model.instance.TreeElement;
+import org.javarosa.core.model.utils.IPreloadHandler;
+import org.javarosa.core.model.utils.PreloadUtils;
 import org.javarosa.xform.parse.XFormParseException;
 import org.javarosa.xform.util.XFormUtils;
 
@@ -28,7 +32,7 @@ import java.io.*;
 
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
- *
+ * 
  * @author Adam Lerer (adam.lerer@gmail.com)
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
@@ -72,7 +76,7 @@ public class FormValidator implements ActionListener {
 
     /**
      * An OutputStream that writes the output to a text area.
-     *
+     * 
      * @author alerer@google.com (Adam Lerer)
      */
     class JTextAreaOutputStream extends OutputStream {
@@ -86,8 +90,8 @@ public class FormValidator implements ActionListener {
 
         @Override
         public void write(int b) {
-            textArea.append(new String(new byte[]{
-                    (byte) (b % 256)
+            textArea.append(new String(new byte[] {
+                (byte) (b % 256)
             }, 0, 1));
         }
     }
@@ -174,7 +178,7 @@ public class FormValidator implements ActionListener {
         }
 
         // validate well formed xml
-//        System.out.println("Checking form...");
+        // System.out.println("Checking form...");
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
         try {
@@ -194,11 +198,15 @@ public class FormValidator implements ActionListener {
                 return;
             }
 
+            // make sure properties get loaded
+            fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
+
             // eval context for function handlers
             fd.setEvaluationContext(new EvaluationContext());
 
             // check for runtime errors
             fd.initialize(true);
+
             validatorOutput.setForeground(Color.BLUE);
             System.err.println("\n\n\n>> Xform is valid! See above for any warnings.");
 
@@ -222,4 +230,34 @@ public class FormValidator implements ActionListener {
 
         }
     }
+
+    private class FakePreloadHandler implements IPreloadHandler {
+
+        String preloadHandled;
+
+
+        public FakePreloadHandler(String preloadHandled) {
+            this.preloadHandled = preloadHandled;
+        }
+
+
+        public boolean handlePostProcess(TreeElement arg0, String arg1) {
+            // TODO Auto-generated method stub
+            return false;
+        }
+
+
+        public IAnswerData handlePreload(String arg0) {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+
+        public String preloadHandled() {
+            // TODO Auto-generated method stub
+            return preloadHandled;
+        }
+
+    }
+
 }
