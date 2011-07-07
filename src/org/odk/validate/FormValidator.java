@@ -14,21 +14,37 @@
 
 package org.odk.validate;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.xml.parsers.DocumentBuilderFactory;
+
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.core.model.utils.IPreloadHandler;
-import org.javarosa.core.model.utils.PreloadUtils;
 import org.javarosa.xform.parse.XFormParseException;
 import org.javarosa.xform.util.XFormUtils;
-
-import javax.swing.*;
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
 
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
