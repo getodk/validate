@@ -228,20 +228,18 @@ public class FormValidator implements ActionListener {
 
         } catch (XFormParseException e) {
             validatorOutput.setForeground(Color.RED);
-            if (e.getMessage() == null) {
-                e.printStackTrace();
-            } else {
+            if (e.getMessage() != null) {
                 System.err.println(e.getMessage());
             }
+            e.printStackTrace();
             System.err.println("\n\n\n>> XForm is invalid. See above for the errors.");
 
         } catch (Exception e) {
             validatorOutput.setForeground(Color.RED);
-            if (e.getMessage() == null) {
-                e.printStackTrace();
-            } else {
+            if (e.getMessage() != null) {
                 System.err.println(e.getMessage());
             }
+            e.printStackTrace();
             System.err.println("\n\n\n>> Something broke the parser. See above for a hint.");
 
         }
