@@ -68,7 +68,7 @@ public class FormValidator implements ActionListener {
 
 
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate v1.5");
+        validatorFrame = new JFrame("ODK Validate for ODK Collect v1.2");
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
@@ -218,7 +218,7 @@ public class FormValidator implements ActionListener {
             fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
 
             // eval context for function handlers
-            fd.setEvaluationContext(new EvaluationContext());
+            fd.setEvaluationContext(new EvaluationContext(null));
 
             // check for runtime errors
             fd.initialize(true);
