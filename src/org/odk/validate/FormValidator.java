@@ -28,6 +28,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -38,11 +41,19 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.javarosa.core.model.Constants;
 import org.javarosa.core.model.FormDef;
+import org.javarosa.core.model.FormIndex;
+import org.javarosa.core.model.SelectChoice;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.core.model.data.IAnswerData;
+import org.javarosa.core.model.instance.InvalidReferenceException;
 import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.core.model.utils.IPreloadHandler;
+import org.javarosa.form.api.FormEntryCaption;
+import org.javarosa.form.api.FormEntryController;
+import org.javarosa.form.api.FormEntryModel;
+import org.javarosa.form.api.FormEntryPrompt;
 import org.javarosa.xform.parse.XFormParseException;
 import org.javarosa.xform.util.XFormUtils;
 
@@ -68,7 +79,7 @@ public class FormValidator implements ActionListener {
 
 
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate for ODK Collect v1.2");
+        validatorFrame = new JFrame("ODK Validate 1.2.1 for ODK Collect v1.2");
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
@@ -181,6 +192,54 @@ public class FormValidator implements ActionListener {
         }
     }
 
+    boolean stepThroughEntireForm(FormEntryModel model) throws InvalidReferenceException {
+    	boolean outcome = false;
+    	Set<String> loops = new HashSet<String>();
+    	// step through every value in the form
+        FormIndex idx = FormIndex.createBeginningOfFormIndex();
+        int event;
+        for (;;) {
+        	idx = model.incrementIndex(idx);
+        	event = model.getEvent(idx);
+        	if ( event == FormEntryController.EVENT_END_OF_FORM ) break;
+
+        	if (event == FormEntryController.EVENT_PROMPT_NEW_REPEAT) {
+        		String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
+        		if ( !loops.contains(elementPath) ) {
+        			loops.add(elementPath);
+            	    model.getForm().createNewRepeat(idx);
+            		idx = model.getFormIndex();
+        		}
+        	} else if (event != FormEntryController.EVENT_QUESTION) {
+                continue;
+            } else {
+            	FormEntryPrompt prompt = model.getQuestionPrompt(idx);
+            	if ( prompt.getControlType() == Constants.CONTROL_SELECT_MULTI ||
+            		 prompt.getControlType() == Constants.CONTROL_SELECT_ONE ) {
+            		String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
+            	    Vector<SelectChoice> items;
+                    items = prompt.getSelectChoices();
+                    // check for null values...
+                    for ( int i = 0 ; i < items.size() ; ++i ) {
+                    	SelectChoice s = items.get(i);
+                    	String text = prompt.getSelectChoiceText(s);
+                    	String image = prompt.getSpecialFormSelectChoiceText(s,
+                                				FormEntryCaption.TEXT_FORM_IMAGE);
+                    	if ((text == null || text.trim().length() == 0 ) &&
+                    			(image == null || image.trim().length() == 0)) {
+                            System.err.println("\n\n\n>>Selection choice label text and image uri are both missing for: " + elementPath + " choice: " + (i+1) + ".");
+                    	}
+                    	if ( s.getValue() == null || s.getValue().trim().length() == 0) {
+                    		outcome = true;
+                            validatorOutput.setForeground(Color.RED);
+                            System.err.println("\n\n\n>>Selection value is missing for: " + elementPath + " choice: " + (i+1) + ". The XML is invalid.");
+                    	}
+                    }
+            	}
+            }
+        }
+        return outcome;
+    }
 
     void validate(String path) {
 
@@ -223,8 +282,19 @@ public class FormValidator implements ActionListener {
             // check for runtime errors
             fd.initialize(true);
 
-            validatorOutput.setForeground(Color.BLUE);
-            System.err.println("\n\n\n>> Xform is valid! See above for any warnings.");
+            System.err.println("\n\n\n>> Xform parsing completed! See above for any warnings.");
+
+    		// create FormEntryController from formdef
+            FormEntryModel fem = new FormEntryModel(fd);
+
+            // and try to step through the form...
+            if ( stepThroughEntireForm(fem) ) {
+            	validatorOutput.setForeground(Color.RED);
+            	System.err.println("\n\n\n>> Xform is invalid! See above for errors and warnings.");
+            } else {
+            	validatorOutput.setForeground(Color.BLUE);
+            	System.err.println("\n\n\n>> Xform is valid! See above for any warnings.");
+            }
 
         } catch (XFormParseException e) {
             validatorOutput.setForeground(Color.RED);
