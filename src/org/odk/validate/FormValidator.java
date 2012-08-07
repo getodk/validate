@@ -71,13 +71,44 @@ public class FormValidator implements ActionListener {
     private JButton chooseFileButton;
     private JButton validateButton;
     private JFileChooser fileChooser;
+    
+    private boolean inError = false;
 
 
     public static void main(String[] args) {
-        new FormValidator();
+    	if ( args.length == 1 ) {
+            String path = args[0];
+            new FormValidator(path);
+    	} else {
+            new FormValidator();
+    	}
     }
 
+    public FormValidator(String path) {
+    	validatorFrame = null;
+    	formPath = null;
+    	chooseFileButton = null;
+    	validateButton = null;
+    	fileChooser = null;
+    	try {
+    		validate(path);
+    	} catch (Exception e ) {
+    		System.err.println("\nException: " + e.toString());
+    		setError(true);
+    	}
+    	
+    	if ( inError ) {
+            System.err.println("\nResult: Invalid");
+            System.exit(1);
+    	} else {
+    		System.exit(0);
+    	}
+    }
 
+    private void setError(boolean outcome) {
+    	inError = outcome;
+    }
+    
     public FormValidator() {
         validatorFrame = new JFrame("ODK Validate 1.2.1 for ODK Collect v1.2");
         JPanel validatorPanel = new JPanel();
@@ -176,8 +207,11 @@ public class FormValidator implements ActionListener {
     public void actionPerformed(ActionEvent e) {
 
         if (e.getSource() == validateButton) {
+        	setError(false);
             validatorOutput.setText("");
+            validatorOutput.setForeground(Color.BLUE);
             validate(formPath.getText());
+            validatorOutput.setForeground(inError ? Color.red : Color.BLUE);
         }
 
         if (e.getSource() == chooseFileButton) {
@@ -187,8 +221,11 @@ public class FormValidator implements ActionListener {
                 File file = fileChooser.getSelectedFile();
                 formPath.setText(file.getPath());
             }
+            setError(false);
             validatorOutput.setText("");
+            validatorOutput.setForeground(Color.BLUE);
             validate(formPath.getText());
+            validatorOutput.setForeground(inError ? Color.red : Color.BLUE);
         }
     }
 
@@ -231,7 +268,7 @@ public class FormValidator implements ActionListener {
                     	}
                     	if ( s.getValue() == null || s.getValue().trim().length() == 0) {
                     		outcome = true;
-                            validatorOutput.setForeground(Color.RED);
+                    		setError(true);
                             System.err.println("\n\n\n>>Selection value is missing for: " + elementPath + " choice: " + (i+1) + ". The XML is invalid.");
                     	}
                     }
@@ -243,11 +280,18 @@ public class FormValidator implements ActionListener {
 
     void validate(String path) {
 
+    	File src = new File(path);
+    	if ( !src.exists() ) {
+    		setError(true);
+    		System.err.println("File: " + src.getAbsolutePath() + " does not exist.");
+    		return;
+    	}
+    	
         FileInputStream fis;
         try {
-            fis = new FileInputStream(new File(path));
+            fis = new FileInputStream(src);
         } catch (FileNotFoundException e) {
-            validatorOutput.setForeground(Color.RED);
+    		setError(true);
             System.err.println("Please choose a file before attempting to validate.");
             return;
         }
@@ -259,7 +303,7 @@ public class FormValidator implements ActionListener {
         try {
             factory.newDocumentBuilder().parse(new File(path));
         } catch (Exception e) {
-            validatorOutput.setForeground(Color.RED);
+    		setError(true);
             System.err.println("\n\n\n>> XML is invalid. See above for the errors.");
             return;
         }
@@ -268,7 +312,7 @@ public class FormValidator implements ActionListener {
         try {
             FormDef fd = XFormUtils.getFormFromInputStream(fis);
             if (fd == null) {
-                validatorOutput.setForeground(Color.RED);
+        		setError(true);
                 System.err.println("\n\n\n>> Something broke the parser. Try again.");
                 return;
             }
@@ -289,15 +333,14 @@ public class FormValidator implements ActionListener {
 
             // and try to step through the form...
             if ( stepThroughEntireForm(fem) ) {
-            	validatorOutput.setForeground(Color.RED);
+        		setError(true);
             	System.err.println("\n\n\n>> Xform is invalid! See above for errors and warnings.");
             } else {
-            	validatorOutput.setForeground(Color.BLUE);
             	System.err.println("\n\n\n>> Xform is valid! See above for any warnings.");
             }
 
         } catch (XFormParseException e) {
-            validatorOutput.setForeground(Color.RED);
+    		setError(true);
             if (e.getMessage() != null) {
                 System.err.println(e.getMessage());
             }
@@ -305,7 +348,7 @@ public class FormValidator implements ActionListener {
             System.err.println("\n\n\n>> XForm is invalid. See above for the errors.");
 
         } catch (Exception e) {
-            validatorOutput.setForeground(Color.RED);
+    		setError(true);
             if (e.getMessage() != null) {
                 System.err.println(e.getMessage());
             }
