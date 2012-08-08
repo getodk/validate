@@ -44,6 +44,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import org.javarosa.core.model.Constants;
 import org.javarosa.core.model.FormDef;
 import org.javarosa.core.model.FormIndex;
+import org.javarosa.core.model.GroupDef;
 import org.javarosa.core.model.SelectChoice;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.core.model.data.IAnswerData;
@@ -110,7 +111,7 @@ public class FormValidator implements ActionListener {
     }
     
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate 1.2.1 for ODK Collect v1.2");
+        validatorFrame = new JFrame("ODK Validate 1.2.2 for ODK Collect v1.2");
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
@@ -247,6 +248,14 @@ public class FormValidator implements ActionListener {
             	    model.getForm().createNewRepeat(idx);
             		idx = model.getFormIndex();
         		}
+        	} else if (event == FormEntryController.EVENT_GROUP) {
+        		GroupDef gd = (GroupDef) model.getForm().getChild(idx);
+        		if ( gd.getChildren() == null || gd.getChildren().size() == 0 ) {
+            		outcome = true;
+            		setError(true);
+            		String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
+                    System.err.println("Group has no children! Group: " + elementPath + ". The XML is invalid.\n");
+        		}
         	} else if (event != FormEntryController.EVENT_QUESTION) {
                 continue;
             } else {
@@ -264,12 +273,12 @@ public class FormValidator implements ActionListener {
                                 				FormEntryCaption.TEXT_FORM_IMAGE);
                     	if ((text == null || text.trim().length() == 0 ) &&
                     			(image == null || image.trim().length() == 0)) {
-                            System.err.println("\n\n\n>>Selection choice label text and image uri are both missing for: " + elementPath + " choice: " + (i+1) + ".");
+                            System.err.println("Selection choice label text and image uri are both missing for: " + elementPath + " choice: " + (i+1) + ".\n");
                     	}
                     	if ( s.getValue() == null || s.getValue().trim().length() == 0) {
                     		outcome = true;
                     		setError(true);
-                            System.err.println("\n\n\n>>Selection value is missing for: " + elementPath + " choice: " + (i+1) + ". The XML is invalid.");
+                            System.err.println("Selection value is missing for: " + elementPath + " choice: " + (i+1) + ". The XML is invalid.\n");
                     	}
                     }
             	}
@@ -326,7 +335,7 @@ public class FormValidator implements ActionListener {
             // check for runtime errors
             fd.initialize(true);
 
-            System.err.println("\n\n\n>> Xform parsing completed! See above for any warnings.");
+            System.out.println("\n\n>> Xform parsing completed! See above for any warnings.\n");
 
     		// create FormEntryController from formdef
             FormEntryModel fem = new FormEntryModel(fd);
@@ -334,26 +343,22 @@ public class FormValidator implements ActionListener {
             // and try to step through the form...
             if ( stepThroughEntireForm(fem) ) {
         		setError(true);
-            	System.err.println("\n\n\n>> Xform is invalid! See above for errors and warnings.");
+            	System.err.println("\n\n>> Xform is invalid! See above for errors and warnings.");
             } else {
-            	System.err.println("\n\n\n>> Xform is valid! See above for any warnings.");
+            	System.out.println("\n\n>> Xform is valid! See above for any warnings.");
             }
 
         } catch (XFormParseException e) {
     		setError(true);
-            if (e.getMessage() != null) {
-                System.err.println(e.getMessage());
-            }
+            System.err.println(e.toString());
             e.printStackTrace();
-            System.err.println("\n\n\n>> XForm is invalid. See above for the errors.");
+            System.err.println("\n\n>> XForm is invalid. See above for the errors.");
 
         } catch (Exception e) {
     		setError(true);
-            if (e.getMessage() != null) {
-                System.err.println(e.getMessage());
-            }
+            System.err.println(e.toString());
             e.printStackTrace();
-            System.err.println("\n\n\n>> Something broke the parser. See above for a hint.");
+            System.err.println("\n\n>> Something broke the parser. See above for a hint.");
 
         }
     }
