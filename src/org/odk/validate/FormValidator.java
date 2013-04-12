@@ -1,11 +1,11 @@
 /*
  * Copyright (C) 2009 Google Inc.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License. You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software distributed under the License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
  * or implied. See the License for the specific language governing permissions and limitations under
@@ -60,7 +60,7 @@ import org.javarosa.xform.util.XFormUtils;
 
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
- * 
+ *
  * @author Adam Lerer (adam.lerer@gmail.com)
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
@@ -72,7 +72,7 @@ public class FormValidator implements ActionListener {
     private JButton chooseFileButton;
     private JButton validateButton;
     private JFileChooser fileChooser;
-    
+
     private boolean inError = false;
 
 
@@ -97,7 +97,7 @@ public class FormValidator implements ActionListener {
     		System.err.println("\nException: " + e.toString());
     		setError(true);
     	}
-    	
+
     	if ( inError ) {
             System.err.println("\nResult: Invalid");
             System.exit(1);
@@ -109,9 +109,9 @@ public class FormValidator implements ActionListener {
     private void setError(boolean outcome) {
     	inError = outcome;
     }
-    
+
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate 1.2.3 for ODK Collect v1.2");
+        validatorFrame = new JFrame("ODK Validate 1.3 for ODK Collect v1.3 and v1.2");
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
@@ -135,7 +135,7 @@ public class FormValidator implements ActionListener {
 
     /**
      * An OutputStream that writes the output to a text area.
-     * 
+     *
      * @author alerer@google.com (Adam Lerer)
      */
     class JTextAreaOutputStream extends OutputStream {
@@ -295,7 +295,7 @@ public class FormValidator implements ActionListener {
     		System.err.println("File: " + src.getAbsolutePath() + " does not exist.");
     		return;
     	}
-    	
+
         FileInputStream fis;
         try {
             fis = new FileInputStream(src);
