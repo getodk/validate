@@ -51,10 +51,12 @@ import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.instance.InvalidReferenceException;
 import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.core.model.utils.IPreloadHandler;
+import org.javarosa.core.services.PrototypeManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryController;
 import org.javarosa.form.api.FormEntryModel;
 import org.javarosa.form.api.FormEntryPrompt;
+import org.javarosa.model.xform.XFormsModule;
 import org.javarosa.xform.parse.XFormParseException;
 import org.javarosa.xform.util.XFormUtils;
 
@@ -65,6 +67,33 @@ import org.javarosa.xform.util.XFormUtils;
  * @author Yaw Anokwa (yanokwa@gmail.com)
  */
 public class FormValidator implements ActionListener {
+    /**
+     * Classes needed to serialize objects. Need to put anything from JR in here.
+     */
+    public final static String[] SERIALIABLE_CLASSES = {
+    		"org.javarosa.core.services.locale.ResourceFileDataSource", // JavaRosaCoreModule
+    		"org.javarosa.core.services.locale.TableLocaleSource", // JavaRosaCoreModule
+            "org.javarosa.core.model.FormDef",
+			"org.javarosa.core.model.SubmissionProfile", // CoreModelModule
+			"org.javarosa.core.model.QuestionDef", // CoreModelModule
+			"org.javarosa.core.model.GroupDef", // CoreModelModule
+			"org.javarosa.core.model.instance.FormInstance", // CoreModelModule
+			"org.javarosa.core.model.data.BooleanData", // CoreModelModule
+			"org.javarosa.core.model.data.DateData", // CoreModelModule
+			"org.javarosa.core.model.data.DateTimeData", // CoreModelModule
+			"org.javarosa.core.model.data.DecimalData", // CoreModelModule
+			"org.javarosa.core.model.data.GeoPointData", // CoreModelModule
+			"org.javarosa.core.model.data.IntegerData", // CoreModelModule
+			"org.javarosa.core.model.data.LongData", // CoreModelModule
+			"org.javarosa.core.model.data.MultiPointerAnswerData", // CoreModelModule
+			"org.javarosa.core.model.data.PointerAnswerData", // CoreModelModule
+			"org.javarosa.core.model.data.SelectMultiData", // CoreModelModule
+			"org.javarosa.core.model.data.SelectOneData", // CoreModelModule
+			"org.javarosa.core.model.data.StringData", // CoreModelModule
+			"org.javarosa.core.model.data.TimeData", // CoreModelModule
+			"org.javarosa.core.model.data.UncastData", // CoreModelModule
+			"org.javarosa.core.model.data.helper.BasicDataPointer" // CoreModelModule
+    };
 
     private final JFrame validatorFrame;
     private JTextField formPath;
@@ -316,6 +345,16 @@ public class FormValidator implements ActionListener {
             System.err.println("\n\n\n>> XML is invalid. See above for the errors.");
             return;
         }
+
+        // need a list of classes that formdef uses
+    	// unfortunately, the JR registerModule() functions do more than this.
+    	// register just the classes that would have been registered by:
+    	// new JavaRosaCoreModule().registerModule();
+    	// new CoreModelModule().registerModule();
+    	// replace with direct call to PrototypeManager
+    	PrototypeManager.registerPrototypes(SERIALIABLE_CLASSES);
+        // initialize XForms module
+        new XFormsModule().registerModule();
 
         // validate if the xform can be parsed.
         try {
