@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/kxml2-2.3.0.jar"/>
-	<classpathentry kind="lib" path="lib/javarosa-libraries.jar"/>
 	<classpathentry kind="lib" path="lib/regexp-me.jar"/>
+	<classpathentry kind="lib" path="lib/javarosa-libraries-2013-08-08.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
