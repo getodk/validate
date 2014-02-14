@@ -51,6 +51,7 @@ import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.instance.InvalidReferenceException;
 import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.core.model.utils.IPreloadHandler;
+import org.javarosa.core.model.condition.IFunctionHandler;
 import org.javarosa.core.services.PrototypeManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryController;
@@ -368,8 +369,36 @@ public class FormValidator implements ActionListener {
             // make sure properties get loaded
             fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
 
-            // eval context for function handlers
-            fd.setEvaluationContext(new EvaluationContext(null));
+			// new evaluation context for function handlers
+            EvaluationContext ec = new EvaluationContext(null);
+            ec.addFunctionHandler(new IFunctionHandler() {
+                @Override
+                public String getName() {
+                    return "pulldata";
+                }
+
+                @Override
+                public Vector getPrototypes() {
+                    return new Vector();
+                }
+
+                @Override
+                public boolean rawArgs() {
+                    return true;
+                }
+
+                @Override
+                public boolean realTime() {
+                    return false;
+                }
+
+                @Override
+                public Object eval(Object[] args, EvaluationContext ec) {
+                    // no actual implementation here -- just a stub to facilitate validation
+                    return args[0];
+                }
+            });
+            fd.setEvaluationContext(ec);
 
             // check for runtime errors
             fd.initialize(true);
