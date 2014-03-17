@@ -48,6 +48,7 @@ import org.javarosa.core.model.GroupDef;
 import org.javarosa.core.model.SelectChoice;
 import org.javarosa.core.model.condition.EvaluationContext;
 import org.javarosa.core.model.data.IAnswerData;
+import org.javarosa.core.model.instance.InstanceInitializationFactory;
 import org.javarosa.core.model.instance.InvalidReferenceException;
 import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.core.model.utils.IPreloadHandler;
@@ -84,6 +85,8 @@ public class FormValidator implements ActionListener {
 			"org.javarosa.core.model.data.DateTimeData", // CoreModelModule
 			"org.javarosa.core.model.data.DecimalData", // CoreModelModule
 			"org.javarosa.core.model.data.GeoPointData", // CoreModelModule
+			"org.javarosa.core.model.data.GeoShapeData", // CoreModelModule
+			"org.javarosa.core.model.data.GeoTraceData", // CoreModelModule
 			"org.javarosa.core.model.data.IntegerData", // CoreModelModule
 			"org.javarosa.core.model.data.LongData", // CoreModelModule
 			"org.javarosa.core.model.data.MultiPointerAnswerData", // CoreModelModule
@@ -93,7 +96,9 @@ public class FormValidator implements ActionListener {
 			"org.javarosa.core.model.data.StringData", // CoreModelModule
 			"org.javarosa.core.model.data.TimeData", // CoreModelModule
 			"org.javarosa.core.model.data.UncastData", // CoreModelModule
-			"org.javarosa.core.model.data.helper.BasicDataPointer" // CoreModelModule
+			"org.javarosa.core.model.data.helper.BasicDataPointer", // CoreModelModule
+			"org.javarosa.core.model.Action", // CoreModelModule
+			"org.javarosa.core.model.actions.SetValueAction" //CoreModelModule
     };
 
     private final JFrame validatorFrame;
@@ -141,7 +146,7 @@ public class FormValidator implements ActionListener {
     }
 
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate 1.4 for ODK Collect v1.4 rev 1037 and older");
+        validatorFrame = new JFrame("ODK Validate 1.4.3 for ODK Collect v1.4.3 rev 1038 and newer");
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
@@ -372,36 +377,31 @@ public class FormValidator implements ActionListener {
 			// new evaluation context for function handlers
             EvaluationContext ec = new EvaluationContext(null);
             ec.addFunctionHandler(new IFunctionHandler() {
-                @Override
+
                 public String getName() {
                     return "pulldata";
                 }
 
-                @Override
                 public Vector getPrototypes() {
                     return new Vector();
                 }
 
-                @Override
                 public boolean rawArgs() {
                     return true;
                 }
 
-                @Override
                 public boolean realTime() {
                     return false;
                 }
 
-                @Override
                 public Object eval(Object[] args, EvaluationContext ec) {
                     // no actual implementation here -- just a stub to facilitate validation
                     return args[0];
-                }
-            });
+                }});
             fd.setEvaluationContext(ec);
 
             // check for runtime errors
-            fd.initialize(true);
+            fd.initialize(true, new InstanceInitializationFactory());
 
             System.out.println("\n\n>> Xform parsing completed! See above for any warnings.\n");
 
