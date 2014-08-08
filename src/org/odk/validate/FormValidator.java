@@ -361,6 +361,10 @@ public class FormValidator implements ActionListener {
     	PrototypeManager.registerPrototypes(SERIALIABLE_CLASSES);
         // initialize XForms module
         new XFormsModule().registerModule();
+        
+		// needed to override rms property manager
+		org.javarosa.core.services.PropertyManager
+				.setPropertyManager(new StubPropertyManager());
 
         // validate if the xform can be parsed.
         try {
