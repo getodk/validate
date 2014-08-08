@@ -146,7 +146,7 @@ public class FormValidator implements ActionListener {
     }
 
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate 1.4.3 for ODK Collect v1.4.3 and newer");
+        validatorFrame = new JFrame("ODK Validate 1.4.4 for ODK Collect v1.4.4 and newer");
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
