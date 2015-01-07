@@ -26,11 +26,13 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -47,12 +49,12 @@ import org.javarosa.core.model.FormIndex;
 import org.javarosa.core.model.GroupDef;
 import org.javarosa.core.model.SelectChoice;
 import org.javarosa.core.model.condition.EvaluationContext;
+import org.javarosa.core.model.condition.IFunctionHandler;
 import org.javarosa.core.model.data.IAnswerData;
 import org.javarosa.core.model.instance.InstanceInitializationFactory;
 import org.javarosa.core.model.instance.InvalidReferenceException;
 import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.core.model.utils.IPreloadHandler;
-import org.javarosa.core.model.condition.IFunctionHandler;
 import org.javarosa.core.services.PrototypeManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryController;
@@ -146,7 +148,7 @@ public class FormValidator implements ActionListener {
     }
 
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate 1.4.4 for ODK Collect v1.4.4 and newer");
+        validatorFrame = new JFrame("ODK Validate 1.4.5 for ODK Collect v1.4.5 and newer");
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 
@@ -298,7 +300,7 @@ public class FormValidator implements ActionListener {
             	if ( prompt.getControlType() == Constants.CONTROL_SELECT_MULTI ||
             		 prompt.getControlType() == Constants.CONTROL_SELECT_ONE ) {
             		String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
-            	    Vector<SelectChoice> items;
+            	    List<SelectChoice> items;
                     items = prompt.getSelectChoices();
                     // check for null values...
                     for ( int i = 0 ; i < items.size() ; ++i ) {
@@ -331,108 +333,114 @@ public class FormValidator implements ActionListener {
     		return;
     	}
 
-        FileInputStream fis;
+        FileInputStream fis = null;
         try {
             fis = new FileInputStream(src);
+
+	        // validate well formed xml
+	        // System.out.println("Checking form...");
+	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+	        factory.setNamespaceAware(true);
+	        try {
+	            factory.newDocumentBuilder().parse(new File(path));
+	        } catch (Exception e) {
+	    		setError(true);
+	            System.err.println("\n\n\n>> XML is invalid. See above for the errors.");
+	            return;
+	        }
+	
+	        // need a list of classes that formdef uses
+	    	// unfortunately, the JR registerModule() functions do more than this.
+	    	// register just the classes that would have been registered by:
+	    	// new JavaRosaCoreModule().registerModule();
+	    	// new CoreModelModule().registerModule();
+	    	// replace with direct call to PrototypeManager
+	    	PrototypeManager.registerPrototypes(SERIALIABLE_CLASSES);
+	        // initialize XForms module
+	        new XFormsModule().registerModule();
+	        
+			// needed to override rms property manager
+			org.javarosa.core.services.PropertyManager
+					.setPropertyManager(new StubPropertyManager());
+	
+	        // validate if the xform can be parsed.
+	        try {
+	            FormDef fd = XFormUtils.getFormFromInputStream(fis);
+	            if (fd == null) {
+	        		setError(true);
+	                System.err.println("\n\n\n>> Something broke the parser. Try again.");
+	                return;
+	            }
+	
+	            // make sure properties get loaded
+	            fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
+	
+	            // update evaluation context for function handlers
+	            fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
+	
+	                public String getName() {
+	                    return "pulldata";
+	                }
+	
+	                public List<Class[]> getPrototypes() {
+	                    return new ArrayList<Class[]>();
+	                }
+	
+	                public boolean rawArgs() {
+	                    return true;
+	                }
+	
+	                public boolean realTime() {
+	                    return false;
+	                }
+	
+	                public Object eval(Object[] args, EvaluationContext ec) {
+	                    // no actual implementation here -- just a stub to facilitate validation
+	                    return args[0];
+	                }});
+	
+	            // check for runtime errors
+	            fd.initialize(true, new InstanceInitializationFactory());
+	
+	            System.out.println("\n\n>> Xform parsing completed! See above for any warnings.\n");
+	
+	    		// create FormEntryController from formdef
+	            FormEntryModel fem = new FormEntryModel(fd);
+	
+	            // and try to step through the form...
+	            if ( stepThroughEntireForm(fem) ) {
+	        		setError(true);
+	            	System.err.println("\n\n>> Xform is invalid! See above for errors and warnings.");
+	            } else {
+	            	System.out.println("\n\n>> Xform is valid! See above for any warnings.");
+	            }
+	
+	        } catch (XFormParseException e) {
+	    		setError(true);
+	            System.err.println(e.toString());
+	            e.printStackTrace();
+	            System.err.println("\n\n>> XForm is invalid. See above for the errors.");
+	
+	        } catch (Exception e) {
+	    		setError(true);
+	            System.err.println(e.toString());
+	            e.printStackTrace();
+	            System.err.println("\n\n>> Something broke the parser. See above for a hint.");
+	
+	        }
         } catch (FileNotFoundException e) {
     		setError(true);
             System.err.println("Please choose a file before attempting to validate.");
             return;
-        }
-
-        // validate well formed xml
-        // System.out.println("Checking form...");
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        try {
-            factory.newDocumentBuilder().parse(new File(path));
-        } catch (Exception e) {
-    		setError(true);
-            System.err.println("\n\n\n>> XML is invalid. See above for the errors.");
-            return;
-        }
-
-        // need a list of classes that formdef uses
-    	// unfortunately, the JR registerModule() functions do more than this.
-    	// register just the classes that would have been registered by:
-    	// new JavaRosaCoreModule().registerModule();
-    	// new CoreModelModule().registerModule();
-    	// replace with direct call to PrototypeManager
-    	PrototypeManager.registerPrototypes(SERIALIABLE_CLASSES);
-        // initialize XForms module
-        new XFormsModule().registerModule();
-        
-		// needed to override rms property manager
-		org.javarosa.core.services.PropertyManager
-				.setPropertyManager(new StubPropertyManager());
-
-        // validate if the xform can be parsed.
-        try {
-            FormDef fd = XFormUtils.getFormFromInputStream(fis);
-            if (fd == null) {
-        		setError(true);
-                System.err.println("\n\n\n>> Something broke the parser. Try again.");
-                return;
-            }
-
-            // make sure properties get loaded
-            fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
-
-			// new evaluation context for function handlers
-            EvaluationContext ec = new EvaluationContext(null);
-            ec.addFunctionHandler(new IFunctionHandler() {
-
-                public String getName() {
-                    return "pulldata";
-                }
-
-                @SuppressWarnings("rawtypes")
-				public Vector getPrototypes() {
-                    return new Vector();
-                }
-
-                public boolean rawArgs() {
-                    return true;
-                }
-
-                public boolean realTime() {
-                    return false;
-                }
-
-                public Object eval(Object[] args, EvaluationContext ec) {
-                    // no actual implementation here -- just a stub to facilitate validation
-                    return args[0];
-                }});
-            fd.setEvaluationContext(ec);
-
-            // check for runtime errors
-            fd.initialize(true, new InstanceInitializationFactory());
-
-            System.out.println("\n\n>> Xform parsing completed! See above for any warnings.\n");
-
-    		// create FormEntryController from formdef
-            FormEntryModel fem = new FormEntryModel(fd);
-
-            // and try to step through the form...
-            if ( stepThroughEntireForm(fem) ) {
-        		setError(true);
-            	System.err.println("\n\n>> Xform is invalid! See above for errors and warnings.");
-            } else {
-            	System.out.println("\n\n>> Xform is valid! See above for any warnings.");
-            }
-
-        } catch (XFormParseException e) {
-    		setError(true);
-            System.err.println(e.toString());
-            e.printStackTrace();
-            System.err.println("\n\n>> XForm is invalid. See above for the errors.");
-
-        } catch (Exception e) {
-    		setError(true);
-            System.err.println(e.toString());
-            e.printStackTrace();
-            System.err.println("\n\n>> Something broke the parser. See above for a hint.");
-
+        } finally {
+        	if ( fis != null ) {
+        		try {
+					fis.close();
+				} catch (IOException e) {
+					// ignore
+					e.printStackTrace();
+				}
+        	}
         }
     }
 

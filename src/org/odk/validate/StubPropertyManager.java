@@ -15,7 +15,7 @@
 package org.odk.validate;
 
 import java.util.HashSet;
-import java.util.Vector;
+import java.util.List;
 
 import org.javarosa.core.services.IPropertyManager;
 import org.javarosa.core.services.properties.IPropertyRules;
@@ -74,13 +74,11 @@ public class StubPropertyManager implements IPropertyManager {
 	}
 
 
-	@SuppressWarnings("rawtypes")
-	public Vector getRules() {
+	public List<IPropertyRules> getRules() {
 		return null;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Vector getProperty(String arg0) {
+	public List<String> getProperty(String arg0) {
 		return null;
 	}
 
@@ -99,7 +97,7 @@ public class StubPropertyManager implements IPropertyManager {
 	}
 
 
-	public void setProperty(String propertyName, @SuppressWarnings("rawtypes") Vector propertyValue) {
+	public void setProperty(String propertyName, List<String> propertyValue) {
 	}
 
 }
