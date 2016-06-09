@@ -2,7 +2,7 @@ version: 'build {build}'
 
 environment:
   global:
-    JAVA_HOME: C:\Program Files\Java\jdk1.8.0
+    JAVA_HOME: C:\Program Files\Java\jdk1.8.0\bin
 
 install:
   # Install mercurial and clone the javarosa repository from Michael Sundt.
@@ -17,7 +17,8 @@ install:
   - ps: 7z x deps.rar -y
   
   # Install ant and build javarosa-libraries.jar
-  - ps: choco install ant -y
+  - ps: choco install ant -y --ignore-dependencies
+  - ps: $env:Path = "C:\Program Files\Java\jdk1.8.0\bin;" + $env:Path
   - ps: $env:Path = "C:\ProgramData\bin;" + $env:Path
   - ps: cd ($env:APPVEYOR_BUILD_FOLDER + "\javarosa\core")
   - ps: ant package

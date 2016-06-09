@@ -15,7 +15,7 @@
 		<javac srcdir="src/" destdir="bin/" classpathref="classpath" debug="true" debuglevel="lines,source" source="1.5" target="1.5"/>
 	</target>
 	<target name="package" depends="compile" description="package source and binary into jar">
-		<jar destfile="dist/ODK Validate.jar">
+		<jar destfile="dist/ODK_Validate.jar">
 			<fileset dir="bin/" includes="**/*.class"/>
 			<zipfileset src="./lib/javarosa-libraries.jar" includes="**/*.class"/>
 			<zipfileset src="./lib/kxml2-2.3.0.jar" includes="**/*.class"/>
