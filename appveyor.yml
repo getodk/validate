@@ -14,7 +14,7 @@ install:
   # Download the dependency jars and unpack them into the repository files.
   - ps: $depsUrl = "https://bitbucket.org/javarosa/javarosa/downloads/javarosa-dependencies-r3073.rar"
   - ps: Invoke-WebRequest $depsUrl -OutFile deps.rar
-  - ps: 7z e deps.rar
+  - ps: 7z x deps.rar -y
   
   # Install ant and build javarosa-libraries.jar
   - ps: choco install ant -y
