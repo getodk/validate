@@ -3,12 +3,14 @@ version: 'build {build}'
 environment:
   global:
     JAVA_HOME: C:\Program Files\Java\jdk1.8.0\bin
+    JAVAROSA_TAG: javarosa-2016-04-21.jar
+    RELEASE_TITLE: v1.4.6_for_ODK_Collect_v1.4.6_and_newer
 
 install:
   # Install mercurial and clone the javarosa repository from Michael Sundt.
   - ps: choco install hg -y
   - ps: $env:Path = "C:\Program Files\Mercurial;" + $env:Path
-  - ps: hg clone https://bitbucket.org/m.sundt/javarosa
+  - ps: hg clone -u $env:JAVAROSA_TAG https://bitbucket.org/m.sundt/javarosa
   - ps: cd ($env:APPVEYOR_BUILD_FOLDER + "\javarosa")
   
   # Download the dependency jars and unpack them into the repository files.
@@ -36,7 +38,7 @@ artifacts:
     name: ODK_Validate.jar
 
 deploy:
-  release:  $(appveyor_build_number)
+  release:  $(RELEASE_TITLE) build $(appveyor_build_number)
   description: 'AppVeyor build of ODK Validate.'
   provider: GitHub
   auth_token:
