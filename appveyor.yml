@@ -4,7 +4,6 @@ environment:
   global:
     JAVA_HOME: C:\Program Files\Java\jdk1.8.0\bin
     JAVAROSA_TAG: javarosa-2016-04-21.jar
-    RELEASE_TITLE: v1.4.6_for_ODK_Collect_v1.4.6_and_newer
 
 install:
   # Install mercurial and clone the javarosa repository from Michael Sundt.
@@ -38,7 +37,7 @@ artifacts:
     name: ODK_Validate.jar
 
 deploy:
-  release:  $(RELEASE_TITLE) build $(appveyor_build_number)
+  release:  $(APPVEYOR_REPO_TAG_NAME) build $(appveyor_build_number)
   description: 'AppVeyor build of ODK Validate.'
   provider: GitHub
   auth_token:
@@ -47,4 +46,5 @@ deploy:
   draft: false
   prerelease: false
   on:
+    branch: master
     appveyor_repo_tag: false
