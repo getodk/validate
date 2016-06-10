@@ -11,3 +11,5 @@ The developer [wiki](https://github.com/opendatakit/opendatakit/wiki) (including
 the [**opendatakit**](https://github.com/opendatakit/opendatakit) project.
 
 The Google group for software engineering questions is: [opendatakit-developers@](https://groups.google.com/forum/#!forum/opendatakit-developers)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/q3n9ih86qe0d7pk5?svg=true)](https://ci.appveyor.com/project/lindsay-stevens/validate)
