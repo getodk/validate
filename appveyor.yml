@@ -8,9 +8,9 @@ environment:
 install:
   # Install mercurial and clone the javarosa repository from Michael Sundt.
   - ps: choco install hg -y
-  - ps: $env:Path = "C:\Program Files\Mercurial;" + $env:Path
+  - ps: $env:Path = "C:\Program Files\Mercurial;$env:Path"
   - ps: hg clone -u $env:JAVAROSA_TAG https://bitbucket.org/m.sundt/javarosa
-  - ps: cd ($env:APPVEYOR_BUILD_FOLDER + "\javarosa")
+  - ps: cd "$env:APPVEYOR_BUILD_FOLDER\javarosa"
   
   # Download the dependency jars and unpack them into the repository files.
   - ps: $depsUrl = "https://bitbucket.org/javarosa/javarosa/downloads/javarosa-dependencies-r3073.rar"
@@ -19,9 +19,9 @@ install:
   
   # Install ant and build javarosa-libraries.jar
   - ps: choco install ant -y --ignore-dependencies
-  - ps: $env:Path = "C:\Program Files\Java\jdk1.8.0\bin;" + $env:Path
-  - ps: $env:Path = "C:\ProgramData\bin;" + $env:Path
-  - ps: cd ($env:APPVEYOR_BUILD_FOLDER + "\javarosa\core")
+  - ps: $env:Path = "C:\Program Files\Java\jdk1.8.0\bin;$env:Path"
+  - ps: $env:Path = "C:\ProgramData\bin;$env:Path"
+  - ps: cd "$env:APPVEYOR_BUILD_FOLDER\javarosa\core"
   - ps: ant package
   - ps: cd $env:APPVEYOR_BUILD_FOLDER
   - ps: copy javarosa\core\dist\javarosa-libraries.jar lib\javarosa-libraries.jar
@@ -37,7 +37,7 @@ artifacts:
     name: ODK_Validate.jar
 
 deploy:
-  release:  $(APPVEYOR_REPO_TAG_NAME) build $(appveyor_build_number)
+  release: $(APPVEYOR_REPO_TAG_NAME)
   description: 'AppVeyor build of ODK Validate.'
   provider: GitHub
   auth_token:
