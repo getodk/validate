@@ -1,0 +1,36 @@
+apply plugin: 'application'
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets.main.java.srcDirs = ['src']
+
+dependencies {
+
+    compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
+    compile files('lib/javarosa-libraries-2016-04-21.jar')
+}
+
+mainClassName = 'org.opendatakit.validate.FormValidator'
+
+jar {
+
+    baseName = 'ODK Validate'
+    version = 'v1.4.9'
+    archiveName = baseName + ' ' + version + '.jar'
+
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+
+    manifest {
+        attributes 'Main-Class': mainClassName
+    }
+
+    // Some of the dependencies are signed jars. When combined into a big jar, the corresponding signature files
+    // don't match with big jar, so the runtime refuses to run the jar. The fix is to exclude the signature files.
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}

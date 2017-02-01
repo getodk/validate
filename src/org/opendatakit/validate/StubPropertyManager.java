@@ -12,7 +12,7 @@
  * the License.
  */
 
-package org.odk.validate;
+package org.opendatakit.validate;
 
 import java.util.HashSet;
 import java.util.List;
