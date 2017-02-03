@@ -23,9 +23,12 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -105,51 +108,34 @@ public class FormValidator implements ActionListener {
 			"org.javarosa.core.model.actions.SetValueAction" //CoreModelModule
     };
 
-    private final JFrame validatorFrame;
+    private JFrame validatorFrame;
     private JTextField formPath;
     private JTextArea validatorOutput;
     private JButton chooseFileButton;
     private JButton validateButton;
     private JFileChooser fileChooser;
 
+    private ErrorListener errors = ErrorListener.DEFAULT_ERROR_LISTENER;
     private boolean inError = false;
 
 
     public static void main(String[] args) {
     	if ( args.length == 1 ) {
             String path = args[0];
-            new FormValidator(path);
+            new FormValidator().validateAndExitWithErrorCode(path);
     	} else {
-            new FormValidator();
+            new FormValidator().show();
     	}
     }
 
-    public FormValidator(String path) {
-    	validatorFrame = null;
-    	formPath = null;
-    	chooseFileButton = null;
-    	validateButton = null;
-    	fileChooser = null;
-    	try {
-    		validate(path);
-    	} catch (Exception e ) {
-    		System.err.println("\nException: " + e.toString());
-    		setError(true);
-    	}
-
-    	if ( inError ) {
-            System.err.println("\nResult: Invalid");
-            System.exit(1);
-    	} else {
-    		System.exit(0);
-    	}
-    }
 
     private void setError(boolean outcome) {
     	inError = outcome;
     }
 
-    public FormValidator() {
+    public FormValidator() {}
+
+    private FormValidator show() {
         validatorFrame = new JFrame(BuildConfig.NAME + " " + BuildConfig.VERSION);
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
@@ -170,6 +156,7 @@ public class FormValidator implements ActionListener {
         // Show the converter.
         validatorFrame.pack();
         validatorFrame.setVisible(true);
+        return this;
     }
 
     /**
@@ -293,7 +280,7 @@ public class FormValidator implements ActionListener {
             		outcome = true;
             		setError(true);
             		String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
-                    System.err.println("Group has no children! Group: " + elementPath + ". The XML is invalid.\n");
+                    errors.error("Group has no children! Group: " + elementPath + ". The XML is invalid.\n");
         		}
         	} else if (event != FormEntryController.EVENT_QUESTION) {
                 continue;
@@ -312,12 +299,12 @@ public class FormValidator implements ActionListener {
                                 				FormEntryCaption.TEXT_FORM_IMAGE);
                     	if ((text == null || text.trim().length() == 0 ) &&
                     			(image == null || image.trim().length() == 0)) {
-                            System.err.println("Selection choice label text and image uri are both missing for: " + elementPath + " choice: " + (i+1) + ".\n");
+                            errors.error("Selection choice label text and image uri are both missing for: " + elementPath + " choice: " + (i+1) + ".\n");
                     	}
                     	if ( s.getValue() == null || s.getValue().trim().length() == 0) {
                     		outcome = true;
                     		setError(true);
-                            System.err.println("Selection value is missing for: " + elementPath + " choice: " + (i+1) + ". The XML is invalid.\n");
+                            errors.error("Selection value is missing for: " + elementPath + " choice: " + (i+1) + ". The XML is invalid.\n");
                     	}
                     }
             	}
@@ -326,28 +313,81 @@ public class FormValidator implements ActionListener {
         return outcome;
     }
 
-    void validate(String path) {
+    public void validateAndExitWithErrorCode(String path) {
+        try {
+            validate(path);
+        } catch (Exception e) {
+            errors.error("\nException: ", e);
+            setError(true);
+        }
 
-    	File src = new File(path);
-    	if ( !src.exists() ) {
-    		setError(true);
-    		System.err.println("File: " + src.getAbsolutePath() + " does not exist.");
-    		return;
-    	}
+        if (inError) {
+            errors.error("\nResult: Invalid");
+            System.exit(1);
+        } else {
+            System.exit(0);
+        }
+    }
+
+  public void validate(String path) {
+        File src = new File(path);
+        if (!src.exists()) {
+            setError(true);
+            errors.error("File: " + src.getAbsolutePath() + " does not exist.");
+            return;
+        }
 
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(src);
+            validate(fis);
+        } catch (FileNotFoundException e) {
+            setError(true);
+            errors.error("Please choose a file before attempting to validate.");
+            return;
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    // ignore
+                    e.printStackTrace();
+                }
+            }
+        }
 
-	        // validate well formed xml
-	        // System.out.println("Checking form...");
+    }
+
+
+
+    public void validateText(String xml) {
+        validate(new ByteArrayInputStream(xml.getBytes()));
+    }
+
+
+    public void validate(InputStream xmlSource) {
+
+            byte[] xformData;
+            try {
+                // first read the whole form into memory since this stream is going to be read twice
+                // first for xml validation
+                // second for xform validation
+                ByteArrayOutputStream baos = copyToByteArray(xmlSource);
+                xformData = baos.toByteArray();
+            } catch (IOException e) {
+                errors.error("Failed to read XML Input Stream", e);
+                return;
+            }
+
+        // validate well formed xml
+	        // errors.info("Checking form...");
 	        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 	        factory.setNamespaceAware(true);
 	        try {
-	            factory.newDocumentBuilder().parse(new File(path));
+	            factory.newDocumentBuilder().parse(new ByteArrayInputStream(xformData));
 	        } catch (Exception e) {
 	    		setError(true);
-	            System.err.println("\n\n\n>> XML is invalid. See above for the errors.");
+	            errors.error("\n\n\n>> XML is invalid. See above for the errors.",e);
 	            return;
 	        }
 	
@@ -367,10 +407,10 @@ public class FormValidator implements ActionListener {
 	
 	        // validate if the xform can be parsed.
 	        try {
-	            FormDef fd = XFormUtils.getFormFromInputStream(fis);
+	            FormDef fd = XFormUtils.getFormFromInputStream(new ByteArrayInputStream(xformData));
 	            if (fd == null) {
 	        		setError(true);
-	                System.err.println("\n\n\n>> Something broke the parser. Try again.");
+	                errors.error("\n\n\n>> Something broke the parser. Try again.");
 	                return;
 	            }
 	
@@ -404,7 +444,7 @@ public class FormValidator implements ActionListener {
 	            // check for runtime errors
 	            fd.initialize(true, new InstanceInitializationFactory());
 	
-	            System.out.println("\n\n>> Xform parsing completed! See above for any warnings.\n");
+	            errors.info("\n\n>> Xform parsing completed! See above for any warnings.\n");
 	
 	    		// create FormEntryController from formdef
 	            FormEntryModel fem = new FormEntryModel(fd);
@@ -412,38 +452,41 @@ public class FormValidator implements ActionListener {
 	            // and try to step through the form...
 	            if ( stepThroughEntireForm(fem) ) {
 	        		setError(true);
-	            	System.err.println("\n\n>> Xform is invalid! See above for errors and warnings.");
+	            	errors.error("\n\n>> Xform is invalid! See above for errors and warnings.");
 	            } else {
-	            	System.out.println("\n\n>> Xform is valid! See above for any warnings.");
+	            	errors.info("\n\n>> Xform is valid! See above for any warnings.");
 	            }
 	
 	        } catch (XFormParseException e) {
 	    		setError(true);
-	            System.err.println(e.toString());
-	            e.printStackTrace();
-	            System.err.println("\n\n>> XForm is invalid. See above for the errors.");
+	            errors.error("\n\n>> XForm is invalid. See above for the errors.",e);
 	
 	        } catch (Exception e) {
 	    		setError(true);
-	            System.err.println(e.toString());
-	            e.printStackTrace();
-	            System.err.println("\n\n>> Something broke the parser. See above for a hint.");
+	            errors.error("\n\n>> Something broke the parser. See above for a hint.",e);
 	
 	        }
-        } catch (FileNotFoundException e) {
-    		setError(true);
-            System.err.println("Please choose a file before attempting to validate.");
-            return;
-        } finally {
-        	if ( fis != null ) {
-        		try {
-					fis.close();
-				} catch (IOException e) {
-					// ignore
-					e.printStackTrace();
-				}
-        	}
+
+    }
+
+    private ByteArrayOutputStream copyToByteArray(InputStream input) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len;
+        while ((len = input.read(buffer)) > -1) {
+            baos.write(buffer, 0, len);
         }
+        baos.flush();
+
+        return baos;
+    }
+
+    public FormValidator setErrorListener(ErrorListener listener){
+        if(listener == null){
+            throw new NullPointerException("Cannot set a null error listener");
+        }
+        this.errors = listener;
+        return this;
     }
 
     private class FakePreloadHandler implements IPreloadHandler {
