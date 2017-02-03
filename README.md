@@ -4,7 +4,7 @@
 [![Build status](https://circleci.com/gh/opendatakit/validate.svg?style=shield&circle-token=:circle-token)](https://circleci.com/gh/opendatakit/briefcase)
 [![Slack status](http://slack.opendatakit.org/badge.svg)](http://slack.opendatakit.org)
 
-ODK Validate is a desktop Java application for confirming that a form is compliant with the ODK XForms specification. Contribute and make the world a better place!
+ODK Validate is a desktop Java application for confirming that a form is compliant with the [ODK XForms spec](http://opendatakit.github.io/xforms-spec).
    
 
 ODK Validate is part of Open Data Kit (ODK), a free and open-source set of tools which help organizations author, field, and manage mobile data collection solutions. Learn more about the Open Data Kit project and its history [here](https://opendatakit.org/about/) and read about example ODK deployments [here](https://opendatakit.org/about/deployments/).
