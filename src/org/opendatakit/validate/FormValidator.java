@@ -64,6 +64,8 @@ import org.javarosa.model.xform.XFormsModule;
 import org.javarosa.xform.parse.XFormParseException;
 import org.javarosa.xform.util.XFormUtils;
 
+import org.opendatakit.validate.buildconfig.BuildConfig;
+
 /**
  * Uses the javarosa-core library to process a form and show errors, if any.
  *
@@ -148,7 +150,7 @@ public class FormValidator implements ActionListener {
     }
 
     public FormValidator() {
-        validatorFrame = new JFrame("ODK Validate 1.4.9 for ODK Collect v1.4.9 and newer");
+        validatorFrame = new JFrame(BuildConfig.NAME + " " + BuildConfig.VERSION);
         JPanel validatorPanel = new JPanel();
         validatorFrame.setResizable(false);
 

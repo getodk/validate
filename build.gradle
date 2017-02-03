@@ -1,4 +1,7 @@
-apply plugin: 'application'
+plugins {
+    id 'application'
+    id 'de.fuerstenau.buildconfig' version '1.1.7'
+}
 
 repositories {
     mavenCentral()
@@ -12,12 +15,45 @@ dependencies {
     compile files('lib/javarosa-libraries-2016-04-21.jar')
 }
 
+ant.condition(property: "os", value: "windows") { os(family: "windows") }
+ant.condition(property: "os", value: "unix" ) { os(family: "unix") }
+
+// Use the result of git describe --tags --dirty as the version name
+// From http://stackoverflow.com/questions/17097263#24121734
+def getVersionName = { ->
+    try {
+        def stdout = new ByteArrayOutputStream()
+        exec {
+            switch(ant.properties.os){
+                case 'windows':
+                    commandLine 'cmd', '/c', 'git', 'describe', '--tags', '--dirty'
+                    break
+                case 'unix':
+                    commandLine 'git', 'describe', '--tags', '--dirty'
+                    break
+            }
+            standardOutput = stdout
+        }
+        return stdout.toString().trim()
+    }
+    catch (ignored) {
+        return null;
+    }
+}
+
+buildConfig {
+    appName = 'ODK Validate'
+    version = getVersionName()
+    clsName = 'BuildConfig'
+    packageName = 'org.opendatakit.validate.buildconfig'
+}
+
 mainClassName = 'org.opendatakit.validate.FormValidator'
 
 jar {
 
-    baseName = 'ODK Validate'
-    version = 'v1.4.9'
+    baseName = buildConfig.appName
+    version = buildConfig.version
     archiveName = baseName + ' ' + version + '.jar'
 
     from {
