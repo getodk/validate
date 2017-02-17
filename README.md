@@ -39,7 +39,7 @@ To run the project, use the `run` Gradle task. To package a runnable jar, use th
 
 2. Create a custom `ErrorListener` by implementing the `org.opendatakit.validate.ErrorListener` interface.
 
-3. Add the custom `ErrorListener` to the form validator and call the any of the various `validate(...)` methods.
+3. Add the custom `ErrorListener` to the form validator and call any of the various `validate(...)` methods.
 
 See example below:
 ```java
