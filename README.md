@@ -33,6 +33,44 @@ The main class is `org.opendatakit.validate.FormValidator`.
  
 To run the project, use the `run` Gradle task. To package a runnable jar, use the `jar` Gradle task.
 
+## Integrating Validate With Your Java App
+
+1. Add the ODKValidate jar to your classpath.(Download the latest jar from <https://opendatakit.org/downloads/download-category/validate/> or build your own)
+
+2. Create a custom `ErrorListener` by implementing the `org.opendatakit.validate.ErrorListener` interface.
+
+3. Add the custom `ErrorListener` to the form validator and call the any of the various `validate(...)` methods.
+
+See example below:
+```java
+ErrorListener listener = new ErrorListener() {
+    public void error(Object err) {
+        // ...custom code to handle error message
+        System.err.println(err);
+    }
+
+    public void error(Object err, Throwable t) {
+         // ...custom code to handle error message and exception
+        System.err.println("" + err + t);
+    }
+
+    public void info(Object msg) {
+        // ...custom code
+        System.out.println(msg);
+    }
+};
+
+
+new FormValidator().setErrorListener(listener).validateText("<xform>...");
+
+```
+
+## Calling Validate Via The Commandline Interface
+
+You can use Validate through the command line like this: `java -jar ODKValidate.jar path/to/xform.xml`.
+
+An exit code of 0 means **Valid Xform** and 1 is **Invalid Xform**.
+
 ## Contributing code
 Any and all contributions to the project are welcome. ODK Validate is used across the world primarily by organizations with a social purpose so you can have real impact!
 
