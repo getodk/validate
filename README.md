@@ -31,15 +31,21 @@ The main class is `org.opendatakit.validate.FormValidator`.
  
 ## Running the project
  
-To run the project, use the `run` Gradle task. To package a runnable jar, use the `jar` Gradle task.
+To run the project, go to the `View` menu, then `Tool Windows > Gradle`. `run` will be in `odk-validate > Tasks > application > run`. Double-click `run` to run the application. This Gradle task will now be the default action in your `Run` menu. 
 
-## Integrating Validate With Your Java App
+You must use the Gradle task to run the application because there is a generated class (`BuildConfig`) that IntelliJ may not properly import and recognize.
 
-1. Add the ODKValidate jar to your classpath.(Download the latest jar from <https://opendatakit.org/downloads/download-category/validate/> or build your own)
+To package a runnable jar, use the `jar` Gradle task.
 
-2. Create a custom `ErrorListener` by implementing the `org.opendatakit.validate.ErrorListener` interface.
+## Integrating Validate with your Java app
 
-3. Add the custom `ErrorListener` to the form validator and call any of the various `validate(...)` methods.
+1. Download the [latest ODKValidate jar](https://opendatakit.org/downloads/download-category/validate/) or build your own.
+
+1. Add the ODKValidate jar to your classpath.
+
+1. Create a custom `ErrorListener` by implementing the `org.opendatakit.validate.ErrorListener` interface.
+
+1. Add the custom `ErrorListener` to the form validator and call any of the various `validate(...)` methods.
 
 See example below:
 ```java
@@ -60,16 +66,15 @@ ErrorListener listener = new ErrorListener() {
     }
 };
 
-
 new FormValidator().setErrorListener(listener).validateText("<xform>...");
 
 ```
 
-## Calling Validate Via The Commandline Interface
+## Calling Validate via the command line interface
 
 You can use Validate through the command line like this: `java -jar ODKValidate.jar path/to/xform.xml`.
 
-An exit code of 0 means **Valid Xform** and 1 is **Invalid Xform**.
+An exit code of 0 means **Valid XForm** and 1 is **Invalid XForm**.
 
 ## Contributing code
 Any and all contributions to the project are welcome. ODK Validate is used across the world primarily by organizations with a social purpose so you can have real impact!
