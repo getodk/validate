@@ -5,6 +5,9 @@ plugins {
 
 repositories {
     mavenCentral()
+    maven {
+        url 'https://oss.sonatype.org/content/groups/public'
+    }
 }
 
 sourceSets.main.java.srcDirs = ['src']
@@ -12,7 +15,7 @@ sourceSets.main.java.srcDirs = ['src']
 dependencies {
 
     compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
-    compile files('lib/javarosa-libraries-2016-04-21.jar')
+    compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.1.0-SNAPSHOT'
 }
 
 ant.condition(property: "os", value: "windows") { os(family: "windows") }
