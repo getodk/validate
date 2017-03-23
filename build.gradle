@@ -5,9 +5,7 @@ plugins {
 
 repositories {
     mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/content/groups/public'
-    }
+    maven { url = 'https://oss.sonatype.org/content/groups/public' }
 }
 
 sourceSets.main.java.srcDirs = ['src']
