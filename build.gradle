@@ -1,26 +1,37 @@
 plugins {
     id 'application'
-    id 'de.fuerstenau.buildconfig' version '1.1.7'
+    id 'de.fuerstenau.buildconfig' version '1.1.8'
 }
 
 repositories {
     mavenCentral()
-    maven { url = 'https://oss.sonatype.org/content/groups/public' }
+    maven { 
+        url = 'https://oss.sonatype.org/content/groups/public' 
+    }
 }
 
-sourceSets.main.java.srcDirs = ['src']
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src']
+        }
+    }
+}
 
 targetCompatibility = '1.7'
 sourceCompatibility = '1.7'
 
 dependencies {
-
     compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
     compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.1.0-SNAPSHOT'
 }
 
-ant.condition(property: "os", value: "windows") { os(family: "windows") }
-ant.condition(property: "os", value: "unix" ) { os(family: "unix") }
+ant.condition(property: "os", value: "windows") { 
+    os(family: "windows") 
+}
+ant.condition(property: "os", value: "unix" ) { 
+    os(family: "unix") 
+}
 
 // Use the result of git describe --tags --dirty as the version name
 // From http://stackoverflow.com/questions/17097263#24121734
@@ -28,7 +39,7 @@ def getVersionName = { ->
     try {
         def stdout = new ByteArrayOutputStream()
         exec {
-            switch(ant.properties.os){
+            switch(ant.properties.os) {
                 case 'windows':
                     commandLine 'cmd', '/c', 'git', 'describe', '--tags', '--dirty', '--always'
                     break
@@ -55,7 +66,6 @@ buildConfig {
 mainClassName = 'org.opendatakit.validate.FormValidator'
 
 jar {
-
     baseName = buildConfig.appName
     version = buildConfig.version
     archiveName = baseName + ' ' + version + '.jar'
@@ -73,4 +83,10 @@ jar {
     // Some of the dependencies are signed jars. When combined into a big jar, the corresponding signature files
     // don't match with big jar, so the runtime refuses to run the jar. The fix is to exclude the signature files.
     exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+}
+
+// Useful for testing
+task explodedJar(type: Copy) {
+    into "$buildDir/libs/$jar.baseName $jar.version"
+    with jar
 }
