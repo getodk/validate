@@ -46,19 +46,19 @@ public class StubPropertyManager implements IPropertyManager {
     private static HashSet<String> mProperties;
     
     static {
-    	mProperties = new HashSet<String>();
-    	mProperties.add(DEVICE_ID_PROPERTY);
-    	mProperties.add(SUBSCRIBER_ID_PROPERTY);
-    	mProperties.add(SIM_SERIAL_PROPERTY);
-    	mProperties.add(PHONE_NUMBER_PROPERTY);
-    	mProperties.add(USERNAME);
-    	mProperties.add(EMAIL);
-    	mProperties.add(OR_DEVICE_ID_PROPERTY);
-    	mProperties.add(OR_SUBSCRIBER_ID_PROPERTY);
-    	mProperties.add(OR_SIM_SERIAL_PROPERTY);
-    	mProperties.add(OR_PHONE_NUMBER_PROPERTY);
-    	mProperties.add(OR_USERNAME);
-    	mProperties.add(OR_EMAIL);
+        mProperties = new HashSet<String>();
+        mProperties.add(DEVICE_ID_PROPERTY);
+        mProperties.add(SUBSCRIBER_ID_PROPERTY);
+        mProperties.add(SIM_SERIAL_PROPERTY);
+        mProperties.add(PHONE_NUMBER_PROPERTY);
+        mProperties.add(USERNAME);
+        mProperties.add(EMAIL);
+        mProperties.add(OR_DEVICE_ID_PROPERTY);
+        mProperties.add(OR_SUBSCRIBER_ID_PROPERTY);
+        mProperties.add(OR_SIM_SERIAL_PROPERTY);
+        mProperties.add(OR_PHONE_NUMBER_PROPERTY);
+        mProperties.add(OR_USERNAME);
+        mProperties.add(OR_EMAIL);
     }
 
     public String getName() {
@@ -70,34 +70,34 @@ public class StubPropertyManager implements IPropertyManager {
     }
 
 
-	public void addRules(IPropertyRules rules) {
-	}
+    public void addRules(IPropertyRules rules) {
+    }
 
 
-	public List<IPropertyRules> getRules() {
-		return null;
-	}
+    public List<IPropertyRules> getRules() {
+        return null;
+    }
 
-	public List<String> getProperty(String arg0) {
-		return null;
-	}
+    public List<String> getProperty(String arg0) {
+        return null;
+    }
 
-	public String getSingularProperty(String propertyName) {
-    	if ( mProperties.contains(propertyName)) {
-    		return "found";
-    	}
-    	if ( propertyName != null && propertyName.length() != 0 ) {
-    		throw new IllegalArgumentException("Unrecognized property name: " + propertyName);
-    	}
-    	return "notfound";
-	}
-
-
-	public void setProperty(String propertyName, String propertyValue) {
-	}
+    public String getSingularProperty(String propertyName) {
+        if ( mProperties.contains(propertyName)) {
+            return "found";
+        }
+        if ( propertyName != null && propertyName.length() != 0 ) {
+            throw new IllegalArgumentException("Unrecognized property name: " + propertyName);
+        }
+        return "notfound";
+    }
 
 
-	public void setProperty(String propertyName, List<String> propertyValue) {
-	}
+    public void setProperty(String propertyName, String propertyValue) {
+    }
+
+
+    public void setProperty(String propertyName, List<String> propertyValue) {
+    }
 
 }
