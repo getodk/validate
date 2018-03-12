@@ -37,13 +37,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.javarosa.core.model.Constants;
@@ -120,12 +114,31 @@ public class FormValidator implements ActionListener {
 
 
     public static void main(String[] args) {
-        if ( args.length == 1 ) {
-            String path = args[0];
-            new FormValidator().validateAndExitWithErrorCode(path);
-        } else {
-            new FormValidator().show();
+
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+
+            if (args.length == 1) {
+                String path = args[0];
+                new FormValidator().validateAndExitWithErrorCode(path);
+            } else {
+                new FormValidator().show();
+            }
+
         }
+        catch (UnsupportedLookAndFeelException e) {
+            e.printStackTrace();
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        catch (InstantiationException e) {
+            e.printStackTrace();
+        }
+        catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+
     }
 
 
