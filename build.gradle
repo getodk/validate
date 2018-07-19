@@ -22,7 +22,7 @@ sourceCompatibility = '1.7'
 
 dependencies {
     compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
-    compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.11.0'
+    compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.11.1'
     compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.25'
 }
 
