@@ -28,14 +28,14 @@ dependencies {
 
 // Required to use fileExtensions property in checkstyle file
 checkstyle {
-    toolVersion = '7.6.1' 
+    toolVersion = '7.6.1'
 }
 
-ant.condition(property: 'os', value: 'windows') { 
-    os(family: 'windows') 
+ant.condition(property: 'os', value: 'windows') {
+    os(family: 'windows')
 }
-ant.condition(property: 'os', value: 'unix' ) { 
-    os(family: 'unix') 
+ant.condition(property: 'os', value: 'unix' ) {
+    os(family: 'unix')
 }
 
 // Use the result of git describe --tags --dirty as the version name
