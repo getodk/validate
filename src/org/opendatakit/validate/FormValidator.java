@@ -106,7 +106,6 @@ public class FormValidator implements ActionListener {
             "org.javarosa.core.model.data.TimeData", // CoreModelModule
             "org.javarosa.core.model.data.UncastData", // CoreModelModule
             "org.javarosa.core.model.data.helper.BasicDataPointer", // CoreModelModule
-            "org.javarosa.core.model.Action", // CoreModelModule
             "org.javarosa.core.model.actions.SetValueAction" //CoreModelModule
     };
 
@@ -408,7 +407,7 @@ public class FormValidator implements ActionListener {
                 errors.error("\n\n\n>> XML is invalid. See above for the errors.",e);
                 return;
             }
-    
+
             // need a list of classes that formdef uses
             // unfortunately, the JR registerModule() functions do more than this.
             // register just the classes that would have been registered by:
@@ -418,11 +417,11 @@ public class FormValidator implements ActionListener {
             PrototypeManager.registerPrototypes(SERIALIABLE_CLASSES);
             // initialize XForms module
             new XFormsModule().registerModule();
-            
+
             // needed to override rms property manager
             org.javarosa.core.services.PropertyManager
                     .setPropertyManager(new StubPropertyManager());
-    
+
             // validate if the xform can be parsed.
             try {
                 FormDef fd = XFormUtils.getFormFromInputStream(new ByteArrayInputStream(xformData));
@@ -431,42 +430,42 @@ public class FormValidator implements ActionListener {
                     errors.error("\n\n\n>> Something broke the parser. Try again.");
                     return;
                 }
-    
+
                 // make sure properties get loaded
                 fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
-    
+
                 // update evaluation context for function handlers
                 fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
-    
+
                     public String getName() {
                         return "pulldata";
                     }
-    
+
                     public List<Class[]> getPrototypes() {
                         return new ArrayList<Class[]>();
                     }
-    
+
                     public boolean rawArgs() {
                         return true;
                     }
-    
+
                     public boolean realTime() {
                         return false;
                     }
-    
+
                     public Object eval(Object[] args, EvaluationContext ec) {
                         // no actual implementation here -- just a stub to facilitate validation
                         return args[0];
                     }});
-    
+
                 // check for runtime errors
                 fd.initialize(true, new InstanceInitializationFactory());
-    
+
                 errors.info("\n\n>> Xform parsing completed! See above for any warnings.\n");
-    
+
                 // create FormEntryController from formdef
                 FormEntryModel fem = new FormEntryModel(fd);
-    
+
                 // and try to step through the form...
                 if ( stepThroughEntireForm(fem) ) {
                     setError(true);
@@ -474,15 +473,15 @@ public class FormValidator implements ActionListener {
                 } else {
                     errors.info("\n\n>> Xform is valid! See above for any warnings.");
                 }
-    
+
             } catch (XFormParseException e) {
                 setError(true);
                 errors.error("\n\n>> XForm is invalid. See above for the errors.",e);
-    
+
             } catch (Exception e) {
                 setError(true);
                 errors.error("\n\n>> Something broke the parser. See above for a hint.",e);
-    
+
             }
 
     }
