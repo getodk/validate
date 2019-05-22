@@ -123,11 +123,21 @@ public class FormValidator implements ActionListener {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            if (args.length == 1) {
-                String path = args[0];
-                new FormValidator().validateAndExitWithErrorCode(path);
-            } else {
+            if (args.length == 0) {
                 new FormValidator().show();
+            } else {
+                List<String> paths = new ArrayList<>();
+                boolean failFast = false;
+                for (String arg : args) {
+                    if (arg.equals("--failFast") || arg.equals("--fail-fast")) {
+                        failFast = true;
+                    } else {
+                        paths.add(arg);
+                    }
+                }
+
+                new FormValidator().validateAndExitWithErrorCode(
+                        paths, failFast);
             }
         }
         catch (UnsupportedLookAndFeelException e) {
@@ -330,15 +340,34 @@ public class FormValidator implements ActionListener {
         return outcome;
     }
 
-    public void validateAndExitWithErrorCode(String path) {
-        try {
-            validate(path);
-        } catch (Exception e) {
-            errors.error("\nException: ", e);
-            setError(true);
+    public void validateAndExitWithErrorCode(List<String> paths, boolean failFast) {
+        List<String> failed = new ArrayList<>();
+        for (String path : paths) {
+            try {
+                validate(path);
+            } catch (Exception e) {
+                errors.error("\nException: ", e);
+                setError(true);
+            }
+
+            if (inError) {
+               if (failFast) {
+                    break;
+               } else {
+                   failed.add(path);
+                   setError(false);
+               }
+            }
         }
 
-        if (inError) {
+        if (inError || !failed.isEmpty()) {
+            if (!failed.isEmpty()) {
+                errors.error("\nThe following files failed validation:");
+                for (String path : failed) {
+                    errors.error(path);
+                }
+            }
+
             errors.error("\nResult: Invalid");
             System.exit(1);
         } else {
@@ -357,6 +386,7 @@ public class FormValidator implements ActionListener {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(src);
+            errors.info("Validating: " + path);
             validate(fis);
         } catch (FileNotFoundException e) {
             setError(true);
@@ -375,27 +405,23 @@ public class FormValidator implements ActionListener {
 
     }
 
-
-
     public void validateText(String xml) {
-        validate(new ByteArrayInputStream(xml.getBytes()));
+        validate(xml.getBytes());
     }
 
-
     public void validate(InputStream xmlSource) {
+        byte[] xformData;
+        try {
+            // first read the whole form into memory since this stream is going to be read twice
+            // first for xml validation
+            // second for xform validation
+            validate(copyToByteArray(xmlSource));
+        } catch (IOException e) {
+            errors.error("Failed to read XML Input Stream", e);
+        }
+    }
 
-            byte[] xformData;
-            try {
-                // first read the whole form into memory since this stream is going to be read twice
-                // first for xml validation
-                // second for xform validation
-                ByteArrayOutputStream baos = copyToByteArray(xmlSource);
-                xformData = baos.toByteArray();
-            } catch (IOException e) {
-                errors.error("Failed to read XML Input Stream", e);
-                return;
-            }
-
+    public void validate(byte[] xformData) {
         // validate well formed xml
             // errors.info("Checking form...");
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -486,7 +512,7 @@ public class FormValidator implements ActionListener {
 
     }
 
-    private ByteArrayOutputStream copyToByteArray(InputStream input) throws IOException {
+    private byte[] copyToByteArray(InputStream input) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024];
         int len;
@@ -495,7 +521,7 @@ public class FormValidator implements ActionListener {
         }
         baos.flush();
 
-        return baos;
+        return baos.toByteArray();
     }
 
     public FormValidator setErrorListener(ErrorListener listener){
