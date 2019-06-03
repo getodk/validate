@@ -60,6 +60,7 @@ import org.javarosa.core.model.instance.InstanceInitializationFactory;
 import org.javarosa.core.model.instance.InvalidReferenceException;
 import org.javarosa.core.model.instance.TreeElement;
 import org.javarosa.core.model.utils.IPreloadHandler;
+import org.javarosa.core.reference.ReferenceManager;
 import org.javarosa.core.services.PrototypeManager;
 import org.javarosa.form.api.FormEntryCaption;
 import org.javarosa.form.api.FormEntryController;
@@ -421,6 +422,10 @@ public class FormValidator implements ActionListener {
             // needed to override rms property manager
             org.javarosa.core.services.PropertyManager
                     .setPropertyManager(new StubPropertyManager());
+
+            // For forms with external secondary instances
+            final ReferenceManager referenceManager = ReferenceManager.instance();
+            referenceManager.addReferenceFactory(new StubReferenceFactory());
 
             // validate if the xform can be parsed.
             try {
