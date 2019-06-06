@@ -29,6 +29,8 @@ dependencies {
     compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
     compile group: 'org.opendatakit', name: 'opendatakit-javarosa', version: '2.13.0'
     compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.25'
+    testCompile 'junit:junit:4.12'
+    testCompile 'org.hamcrest:hamcrest-all:1.3'
 }
 
 // Required to use fileExtensions property in checkstyle file
