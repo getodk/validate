@@ -71,7 +71,7 @@ new FormValidator().setErrorListener(listener).validateText("<xform>...");
 
 ## Calling Validate via the command line interface
 
-You can use Validate through the command line like this: `java -jar ODKValidate.jar path/to/xform.xml`.
+You can use Validate through the command line like this: `java -jar ODKValidate.jar [--fail-fast] path/to/xform.xml [FORM...]`.
 
 An exit code of 0 means **Valid XForm** and 1 is **Invalid XForm**.
 
