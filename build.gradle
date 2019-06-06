@@ -14,6 +14,7 @@ sourceSets {
     main {
         java {
             srcDirs = ['src']
+            exclude 'test'
         }
 
         resources {
