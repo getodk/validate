@@ -77,7 +77,7 @@ mainClassName = 'org.opendatakit.validate.FormValidator'
 jar {
     baseName = buildConfig.appName
     version = buildConfig.version
-    archiveName = baseName + ' ' + version + '.jar'
+    archiveName = (baseName + ' ' + version + '.jar').replaceAll(" ","-")
 
     from {
         configurations.compile.collect {
