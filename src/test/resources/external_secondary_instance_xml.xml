@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
+    <h:head>
+        <h:title>External Secondary Instance with xlsforms generated itemset value/label refs</h:title>
+        <model>
+            <instance>
+                <data id="external-choices">
+                    <some-value/>
+                    <meta>
+                        <instanceID/>
+                    </meta>
+                </data>
+            </instance>
+            <instance id="external-choices" src="jr://file/external-choices.xml"/>
+            <bind nodeset="/data/some-value" type="select1"/>
+            <bind calculate="concat('uuid:', uuid())" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
+        </model>
+    </h:head>
+    <h:body>
+        <select1 ref="/data/some-value">
+            <label>Value 1</label>
+            <itemset nodeset="instance('external-choices')/root/item">
+                <value ref="name"/>
+                <label ref="label"/>
+            </itemset>
+        </select1>
+    </h:body>
+</h:html>

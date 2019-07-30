@@ -1,6 +1,6 @@
 <root>
     <item>
-        <name>an-item</name>
-        <label>An Item</label>
+        <name>an-xml-item</name>
+        <label>An XML Item</label>
     </item>
 </root>

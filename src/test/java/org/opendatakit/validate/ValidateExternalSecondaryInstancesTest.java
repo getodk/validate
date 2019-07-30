@@ -13,8 +13,17 @@ import org.junit.Test;
 
 public class ValidateExternalSecondaryInstancesTest {
     @Test
-    public void supports_xlsforms_value_and_label_refs_in_itemsets_using_secondary_external_instances() throws URISyntaxException {
-        final Path path = getPathOf("external_secondary_instance_non_standard_use.xml");
+    public void supports_xlsforms_value_and_label_refs_in_itemsets_using_secondary_external_instances_xml() throws URISyntaxException {
+        supports_xlsforms_value_and_label_refs_in_itemsets_using_secondary_external_instances("external_secondary_instance_xml.xml");
+    }
+
+    @Test
+    public void supports_xlsforms_value_and_label_refs_in_itemsets_using_secondary_external_instances_csv() throws URISyntaxException {
+        supports_xlsforms_value_and_label_refs_in_itemsets_using_secondary_external_instances("external_secondary_instance_csv.xml");
+    }
+
+    private void supports_xlsforms_value_and_label_refs_in_itemsets_using_secondary_external_instances(String secondaryInstancePath) throws URISyntaxException  {
+        final Path path = getPathOf(secondaryInstancePath);
         final FormValidator validator = new FormValidator();
 
         Output output = Output.runAndGet(new Runnable() {

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa">
     <h:head>
-        <h:title>External Secondary Instance with xslforms generated itemset value/label refs</h:title>
+        <h:title>External Secondary Instance with xlsforms generated itemset value/label refs</h:title>
         <model>
             <instance>
                 <data id="external-choices">
@@ -11,7 +11,7 @@
                     </meta>
                 </data>
             </instance>
-            <instance id="external-choices" src="jr://file/external-choices.xml"/>
+            <instance id="external-choices" src="jr://file-csv/external-choices.csv"/>
             <bind nodeset="/data/some-value" type="select1"/>
             <bind calculate="concat('uuid:', uuid())" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
         </model>

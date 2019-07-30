@@ -8,18 +8,25 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 
 /**
- * Provides the local URI of a simple XML document. This allows forms with external secondary instances to
+ * Provides the local URI of a simple XML or CSV document. This allows forms with external secondary instances to
  * pass validation.
  *
- * The fake instance has the following structure:
+ * The fake XML instance has the following structure:
  *
  * <pre>{@code
  * <root>
  *     <item>
- *         <name>an-item</name>
- *         <label>An Item</label>
+ *         <name>an-xml-item</name>
+ *         <label>An XML Item</label>
  *     </item>
  * </root>
+ *}</pre>
+ *
+ * The fake CSV instance has the following structure:
+ *
+ * <pre>{@code
+ * name,label
+ * a-csv-item, "A CSV Item"
  *}</pre>
  *
  * This means only itemset declarations that define {@code name} as the node name referring to the select underlying
@@ -45,6 +52,13 @@ import java.net.URISyntaxException;
  *
  */
 public class StubReference implements Reference {
+
+    private String uri;
+
+    public StubReference(String URI) {
+        uri = URI;
+    }
+
     @Override
     public boolean doesBinaryExist() {
         return true;
@@ -63,7 +77,13 @@ public class StubReference implements Reference {
     @Override
     public String getLocalURI() {
         try {
-            return getClass().getClassLoader().getResource("fake-itemset.xml").toURI().getPath();
+            if (uri.toLowerCase().startsWith("jr://file/")) {
+                return getClass().getClassLoader().getResource("fake-itemset.xml").toURI().getPath();
+            } else if (uri.toLowerCase().startsWith("jr://file-csv/")) {
+                return getClass().getClassLoader().getResource("fake-itemset.csv").toURI().getPath();
+            } else {
+                return null;
+            }
         } catch (URISyntaxException e) {
             return null;
         }
