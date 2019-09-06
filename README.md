@@ -19,6 +19,8 @@ ODK Validate is part of Open Data Kit (ODK), a free and open-source set of tools
 ## What validation is performed
 Validate is a thin wrapper over the [JavaRosa](https://github.com/opendatakit/javarosa/) form parsing library. Given an XML document representing an [ODK XForms](https://opendatakit.github.io/xforms-spec/) form definition, Validate uses JavaRosa to first parse that form document into an in-memory representation and then it goes through that in-memory representation like a client such as [Collect](https://github.com/opendatakit/collect) would. This simulates displaying questions to the user and exercises the logic in the form. Errors detected by JavaRosa are presented to the user.
 
+Validate does not simulate entering any data or perform static analysis on expressions so expressions that are not reached when first displaying a form are not verified. For example, if an `if` function call has a problematic call in one of its branches such as `if (/data/my_var = 'yes', fake-function('bad', 'bad'), 0)`, Validate will not identify that unless the default value for `my_var` is `yes`.
+
 In general, issues with how the validation is done or what errors get presented are JavaRosa issues and should be filed [in its repository](https://github.com/opendatakit/javarosa/).
 
 ## Setting up your development environment
