@@ -37,7 +37,7 @@ To package a runnable jar, use the `jar` Gradle task.
 
 ## How Validate validates
 
-Validate is a thin wrapper of the [JavaRosa](https://github.com/opendatakit/javarosa/) form parsing library. Validate uses JavaRosa to parse an [ODK XForms](https://opendatakit.github.io/xforms-spec/) form definition into an in-memory representation. Validate then goes through the in-memory representation in the same way a client such as [Collect](https://github.com/opendatakit/collect) would. This simulates displaying questions to the user and exercises the logic in the form. Errors detected by JavaRosa are presented to the user.
+Validate is a thin wrapper around the [JavaRosa](https://github.com/opendatakit/javarosa/) form parsing library. Validate uses JavaRosa to parse an [ODK XForms](https://opendatakit.github.io/xforms-spec/) form definition into an in-memory representation. Validate then goes through the in-memory representation in the same way a client such as [Collect](https://github.com/opendatakit/collect) would. This simulates displaying questions to the user and exercises the logic in the form. Errors detected by JavaRosa are presented to the user.
 
 Validate does not simulate entering any data. Expressions that are not reached when first displaying a form are not verified. For example, if an `if` call has an invalid function call in one of its branches such as `if (/data/my_var = 'yes', invalid-function('bad', 'bad'), 0)`, Validate will not identify that unless the default value for `my_var` is `yes`.
 
