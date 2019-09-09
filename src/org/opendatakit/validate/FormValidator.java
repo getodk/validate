@@ -68,6 +68,7 @@ import org.javarosa.form.api.FormEntryModel;
 import org.javarosa.form.api.FormEntryPrompt;
 import org.javarosa.model.xform.XFormsModule;
 import org.javarosa.xform.parse.XFormParseException;
+import org.javarosa.xform.parse.XFormParser;
 import org.javarosa.xform.util.XFormUtils;
 
 import org.opendatakit.validate.buildconfig.BuildConfig;
@@ -452,6 +453,9 @@ public class FormValidator implements ActionListener {
             // For forms with external secondary instances
             final ReferenceManager referenceManager = ReferenceManager.instance();
             referenceManager.addReferenceFactory(new StubReferenceFactory());
+
+            PrototypeManager.registerPrototype("org.opendatakit.validate.StubSetGeopointAction");
+            XFormParser.registerActionHandler(StubSetGeopointActionHandler.ELEMENT_NAME, new StubSetGeopointActionHandler());
 
             // validate if the xform can be parsed.
             try {
