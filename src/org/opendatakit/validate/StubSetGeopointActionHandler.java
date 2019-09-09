@@ -9,8 +9,11 @@ import org.javarosa.core.model.actions.setgeopoint.SetGeopointActionHandler;
 public final class StubSetGeopointActionHandler extends SetGeopointActionHandler {
     @Override
     public SetGeopointAction getSetGeopointAction() {
-        // We'd like to use the default constructor but then the name wouldn't be set because the default constructor
-        // has to have an empty body for serialization. Instead, set a null reference and let handle set the target.
+        // We'd like to use the default constructor but then the name field defined in Action wouldn't be set. 
+        // This is because the default constructor has to have an empty body for serialization. Instead, we've
+        // defined a constructor in StubSetGeopointAction that takes in a TreeReference (and sets the name field). 
+        // We can pass in null since we don't know the target node at this point and SetGeopointActionHandler's 
+        // handle() method will set the target.
         return new StubSetGeopointAction(null);
     }
 }
