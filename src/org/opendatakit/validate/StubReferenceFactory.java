@@ -16,11 +16,11 @@ public class StubReferenceFactory implements ReferenceFactory {
 
     @Override
     public Reference derive(String URI) {
-        return new StubReference(URI);
+        return new StubReference();
     }
 
     @Override
     public Reference derive(String URI, String context) {
-        return new StubReference(URI);
+        return new StubReference();
     }
 }
