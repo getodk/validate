@@ -14,7 +14,7 @@ import org.junit.Test;
 public class ValidateExternalSecondaryInstancesTest {
     @Test
     public void supportsXlsformsDefaultValueAndLabelRefs_inItemsets_usingXMLExternalSecondaryInstance() throws URISyntaxException {
-        final Path path = getPathOf("external_secondary_instance_xml.xml");
+        final Path path = getPathOf("xml_external_instance.xml");
         final FormValidator validator = new FormValidator();
 
         Output output = Output.runAndGet(() -> validator.validate(path.toString()));
@@ -23,8 +23,8 @@ public class ValidateExternalSecondaryInstancesTest {
     }
 
     @Test
-    public void supports_xlsforms_value_and_label_refs_in_itemsets_using_secondary_external_instances_csv() throws URISyntaxException {
-        final Path path = getPathOf("external_secondary_instance_csv.xml");
+    public void supportsXlsformsDefaultValueAndLabelRefs_inItemsets_usingCsvSecondaryExternalInstance() throws URISyntaxException {
+        final Path path = getPathOf("csv_external_instance.xml");
         final FormValidator validator = new FormValidator();
 
         Output output = Output.runAndGet(() -> validator.validate(path.toString()));
@@ -34,7 +34,7 @@ public class ValidateExternalSecondaryInstancesTest {
 
     @Test
     public void supportsCustomValueAndLabelRefs_inItemsets_usingExternalSecondaryInstance() throws URISyntaxException {
-        final Path path = getPathOf("external_secondary_instance_custom_refs.xml");
+        final Path path = getPathOf("external_instance_custom_refs.xml");
         final FormValidator validator = new FormValidator();
 
         Output output = Output.runAndGet(() -> validator.validate(path.toString()));
