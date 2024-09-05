@@ -432,7 +432,7 @@ public class FormValidator implements ActionListener {
                 factory.newDocumentBuilder().parse(new ByteArrayInputStream(xformData));
             } catch (Exception e) {
                 setError(true);
-                errors.error("\n\n\n>> XML is invalid. See above for the errors.",e);
+                errors.error("\n\n\n>> XML is invalid.",e);
                 return;
             }
 
@@ -496,7 +496,7 @@ public class FormValidator implements ActionListener {
                 // check for runtime errors
                 fd.initialize(true, new InstanceInitializationFactory());
 
-                errors.info("\n\n>> Xform parsing completed! See above for any warnings.\n");
+                errors.info("\n\n>> Xform parsing completed!\n");
 
                 // create FormEntryController from formdef
                 FormEntryModel fem = new FormEntryModel(fd);
@@ -504,18 +504,18 @@ public class FormValidator implements ActionListener {
                 // and try to step through the form...
                 if ( stepThroughEntireForm(fem) ) {
                     setError(true);
-                    errors.error("\n\n>> Xform is invalid! See above for errors and warnings.");
+                    errors.error("\n\n>> Xform is invalid!");
                 } else {
-                    errors.info("\n\n>> Xform is valid! See above for any warnings.");
+                    errors.info("\n\n>> Xform is valid!");
                 }
 
             } catch (XFormParseException e) {
                 setError(true);
-                errors.error("\n\n>> XForm is invalid. See above for the errors.",e);
+                errors.error("\n\n>> XForm is invalid.",e);
 
             } catch (Exception e) {
                 setError(true);
-                errors.error("\n\n>> Something broke the parser. See above for a hint.",e);
+                errors.error("\n\n>> Something broke the parser.",e);
 
             }
 
