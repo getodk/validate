@@ -28,7 +28,9 @@ sourceCompatibility = '1.8'
 
 dependencies {
     compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
-    compile group: 'org.getodk', name: 'javarosa', version: '4.4.1'
+    compile (group: 'org.getodk', name: 'javarosa', version: '4.4.1') {
+        exclude group: "com.fasterxml.jackson.core" // Validate doesn't validate attached geoJSON files
+    }
     compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.25'
     testCompile 'junit:junit:4.13.2'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
@@ -85,7 +87,34 @@ jar {
 
     from {
         configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
+            if (it.isDirectory()) {
+                return it
+            } else {
+                if (it.path.contains("bouncycastle")) {
+                    return zipTree(it).matching {
+                        include '/**/*/ASN1Encodable.class', '/**/*/ASN1Object.class', '/**/*/X9ECParameters.class',
+                            '/**/*/X9ObjectIdentifiers.class', '/**/*/CipherParameters.class', '/**/*/DefaultServiceProperties.class',
+                            '/**/*/CryptoServiceProperties.class', '/**/*/CryptoServicePurpose.class', '/**/*/CryptoServicesConstraints.class',
+                            '/**/*/CryptoServicesPermission.class', '/**/*/CryptoServicesRegistrar.class', '/**/*/CryptoServicesRegistrar$1.class',
+                            '/**/*/CryptoServicesRegistrar$Property.class', '/**/*/CryptoServicesRegistrar$ThreadLocalSecureRandomProvider.class',
+                            '/**/*/Digest.class', '/**/*/EncodableDigest.class', '/**/*/LongDigest.class', '/**/*/SHA512Digest.class',
+                            '/**/*/Utils.class', '/**/*/Utils$DefaultPropertiesWithPRF.class', '/**/*/ExtendedDigest.class',
+                            '/**/*/AsymmetricKeyParameter.class', '/**/*/DHParameters.class', '/**/*/DHValidationParameters.class',
+                            '/**/*/DSAParameters.class', '/**/*/DSAValidationParameters.class', '/**/*/Ed25519PublicKeyParameters.class',
+                            '/**/*/SecureRandomProvider.class', '/**/*/Signer.class', '/**/*/Ed25519Signer.class', '/**/*/Ed25519Signer$Buffer.class',
+                            '/**/*/Utils.class', '/**/*/X25519Field.class', '/**/*/Codec.class', '/**/*/Ed25519.class', '/**/*/Ed25519$F.class',
+                            '/**/*/Ed25519$PointAccum.class', '/**/*/Ed25519$PointAffine.class', '/**/*/Ed25519$PointExtended.class',
+                            '/**/*/Ed25519$PointPrecomp.class', '/**/*/Ed25519$PointPrecompZ.class', '/**/*/Ed25519$PointTemp.class',
+                            '/**/*/Ed25519$PublicPoint.class', '/**/*/Scalar25519.class', '/**/*/ScalarUtil.class', '/**/*/Wnaf.class',
+                            '/**/*/Mod.class', '/**/*/Nat.class', '/**/*/Nat256.class', '/**/*/Arrays.class', '/**/*/Encodable.class',
+                            '/**/*/DecoderException.class', '/**/*/Encoder.class', '/**/*/EncoderException.class',
+                            '/**/*/Hex.class', '/**/*/HexEncoder.class', '/**/*/Integers.class',
+                            '/**/*/Memoable.class', '/**/*/Pack.class'
+                    }
+                } else {
+                    return zipTree(it)
+                }
+            }
         }
     }
 
