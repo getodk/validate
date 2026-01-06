@@ -471,6 +471,30 @@ public class FormValidator implements ActionListener {
             }
         });
 
+        fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
+
+            public String getName() {
+                return "intersects";
+            }
+
+            public List<Class[]> getPrototypes() {
+                return new ArrayList<Class[]>();
+            }
+
+            public boolean rawArgs() {
+                return true;
+            }
+
+            public boolean realTime() {
+                return false;
+            }
+
+            public Object eval(Object[] args, EvaluationContext ec) {
+                // stub for validation
+                return args[0];
+            }
+        });
+
         // check for runtime errors
         try {
             fd.initialize(true, new InstanceInitializationFactory());

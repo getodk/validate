@@ -74,4 +74,30 @@ public class CollectFunctionHandlersTest {
         assertThat(output.getErr(), containsString("Xform is invalid"));
         assertThat(output.getStd(), isEmptyString());
     }
+
+    @Test
+    public void acceptsIntersects() throws IOException, XFormParser.ParseException {
+        FormDef fd = Scenario.createFormDef("Intersects", html(
+            head(
+                title("Form with intersects"),
+                model(
+                    mainInstance(t("data id=\"intersects\"",
+                        t("q1"),
+                        t("calc")
+                    )),
+                    bind("/data/calc").type("string").calculate("intersects(/data/q1)")
+                )
+            ),
+            body(
+                input("/data/q1")
+            )
+        ));
+
+        final FormValidator validator = new FormValidator();
+        Output output = Output.runAndGet(() -> validator.validate(fd));
+
+        assertThat(output.getErr(), isEmptyString());
+        assertThat(output.getStd(), containsString("Xform parsing completed"));
+        assertThat(output.getStd(), containsString("Xform is valid"));
+    }
 }
