@@ -84,31 +84,31 @@ public class FormValidator implements ActionListener {
      * Classes needed to serialize objects. Need to put anything from JR in here.
      */
     public final static String[] SERIALIABLE_CLASSES = {
-            "org.javarosa.core.services.locale.ResourceFileDataSource", // JavaRosaCoreModule
-            "org.javarosa.core.services.locale.TableLocaleSource", // JavaRosaCoreModule
-            "org.javarosa.core.model.FormDef",
-            "org.javarosa.core.model.SubmissionProfile", // CoreModelModule
-            "org.javarosa.core.model.QuestionDef", // CoreModelModule
-            "org.javarosa.core.model.GroupDef", // CoreModelModule
-            "org.javarosa.core.model.instance.FormInstance", // CoreModelModule
-            "org.javarosa.core.model.data.BooleanData", // CoreModelModule
-            "org.javarosa.core.model.data.DateData", // CoreModelModule
-            "org.javarosa.core.model.data.DateTimeData", // CoreModelModule
-            "org.javarosa.core.model.data.DecimalData", // CoreModelModule
-            "org.javarosa.core.model.data.GeoPointData", // CoreModelModule
-            "org.javarosa.core.model.data.GeoShapeData", // CoreModelModule
-            "org.javarosa.core.model.data.GeoTraceData", // CoreModelModule
-            "org.javarosa.core.model.data.IntegerData", // CoreModelModule
-            "org.javarosa.core.model.data.LongData", // CoreModelModule
-            "org.javarosa.core.model.data.MultiPointerAnswerData", // CoreModelModule
-            "org.javarosa.core.model.data.PointerAnswerData", // CoreModelModule
-            "org.javarosa.core.model.data.SelectMultiData", // CoreModelModule
-            "org.javarosa.core.model.data.SelectOneData", // CoreModelModule
-            "org.javarosa.core.model.data.StringData", // CoreModelModule
-            "org.javarosa.core.model.data.TimeData", // CoreModelModule
-            "org.javarosa.core.model.data.UncastData", // CoreModelModule
-            "org.javarosa.core.model.data.helper.BasicDataPointer", // CoreModelModule
-            "org.javarosa.core.model.actions.SetValueAction" //CoreModelModule
+        "org.javarosa.core.services.locale.ResourceFileDataSource", // JavaRosaCoreModule
+        "org.javarosa.core.services.locale.TableLocaleSource", // JavaRosaCoreModule
+        "org.javarosa.core.model.FormDef",
+        "org.javarosa.core.model.SubmissionProfile", // CoreModelModule
+        "org.javarosa.core.model.QuestionDef", // CoreModelModule
+        "org.javarosa.core.model.GroupDef", // CoreModelModule
+        "org.javarosa.core.model.instance.FormInstance", // CoreModelModule
+        "org.javarosa.core.model.data.BooleanData", // CoreModelModule
+        "org.javarosa.core.model.data.DateData", // CoreModelModule
+        "org.javarosa.core.model.data.DateTimeData", // CoreModelModule
+        "org.javarosa.core.model.data.DecimalData", // CoreModelModule
+        "org.javarosa.core.model.data.GeoPointData", // CoreModelModule
+        "org.javarosa.core.model.data.GeoShapeData", // CoreModelModule
+        "org.javarosa.core.model.data.GeoTraceData", // CoreModelModule
+        "org.javarosa.core.model.data.IntegerData", // CoreModelModule
+        "org.javarosa.core.model.data.LongData", // CoreModelModule
+        "org.javarosa.core.model.data.MultiPointerAnswerData", // CoreModelModule
+        "org.javarosa.core.model.data.PointerAnswerData", // CoreModelModule
+        "org.javarosa.core.model.data.SelectMultiData", // CoreModelModule
+        "org.javarosa.core.model.data.SelectOneData", // CoreModelModule
+        "org.javarosa.core.model.data.StringData", // CoreModelModule
+        "org.javarosa.core.model.data.TimeData", // CoreModelModule
+        "org.javarosa.core.model.data.UncastData", // CoreModelModule
+        "org.javarosa.core.model.data.helper.BasicDataPointer", // CoreModelModule
+        "org.javarosa.core.model.actions.SetValueAction" //CoreModelModule
     };
 
     private JFrame validatorFrame;
@@ -139,19 +139,15 @@ public class FormValidator implements ActionListener {
                 }
 
                 new FormValidator().validateAndExitWithErrorCode(
-                        paths, failFast);
+                    paths, failFast);
             }
-        }
-        catch (UnsupportedLookAndFeelException e) {
+        } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (InstantiationException e) {
+        } catch (InstantiationException e) {
             e.printStackTrace();
-        }
-        catch (IllegalAccessException e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -162,7 +158,8 @@ public class FormValidator implements ActionListener {
         inError = outcome;
     }
 
-    public FormValidator() {}
+    public FormValidator() {
+    }
 
     private FormValidator show() {
         validatorFrame = new JFrame(BuildConfig.NAME + " " + BuildConfig.VERSION);
@@ -204,7 +201,7 @@ public class FormValidator implements ActionListener {
 
         @Override
         public void write(int b) {
-            textArea.append(new String(new byte[] {
+            textArea.append(new String(new byte[]{
                 (byte) (b % 256)
             }, 0, 1));
         }
@@ -291,21 +288,21 @@ public class FormValidator implements ActionListener {
         // step through every value in the form
         FormIndex idx = FormIndex.createBeginningOfFormIndex();
         int event;
-        for (;;) {
+        for (; ; ) {
             idx = model.incrementIndex(idx);
             event = model.getEvent(idx);
-            if ( event == FormEntryController.EVENT_END_OF_FORM ) break;
+            if (event == FormEntryController.EVENT_END_OF_FORM) break;
 
             if (event == FormEntryController.EVENT_PROMPT_NEW_REPEAT) {
                 String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
-                if ( !loops.contains(elementPath) ) {
+                if (!loops.contains(elementPath)) {
                     loops.add(elementPath);
                     model.getForm().createNewRepeat(idx);
                     idx = model.getFormIndex();
                 }
             } else if (event == FormEntryController.EVENT_GROUP) {
                 GroupDef gd = (GroupDef) model.getForm().getChild(idx);
-                if ( gd.getChildren() == null || gd.getChildren().size() == 0 ) {
+                if (gd.getChildren() == null || gd.getChildren().size() == 0) {
                     outcome = true;
                     setError(true);
                     String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
@@ -315,25 +312,25 @@ public class FormValidator implements ActionListener {
                 continue;
             } else {
                 FormEntryPrompt prompt = model.getQuestionPrompt(idx);
-                if ( prompt.getControlType() == Constants.CONTROL_SELECT_MULTI ||
-                     prompt.getControlType() == Constants.CONTROL_SELECT_ONE ) {
+                if (prompt.getControlType() == Constants.CONTROL_SELECT_MULTI ||
+                    prompt.getControlType() == Constants.CONTROL_SELECT_ONE) {
                     String elementPath = idx.getReference().toString().replaceAll("\\[\\d+\\]", "");
                     List<SelectChoice> items;
                     items = prompt.getSelectChoices();
                     // check for null values...
-                    for ( int i = 0 ; i < items.size() ; ++i ) {
+                    for (int i = 0; i < items.size(); ++i) {
                         SelectChoice s = items.get(i);
                         String text = prompt.getSelectChoiceText(s);
                         String image = prompt.getSpecialFormSelectChoiceText(s,
-                                                FormEntryCaption.TEXT_FORM_IMAGE);
-                        if ((text == null || text.trim().length() == 0 ) &&
-                                (image == null || image.trim().length() == 0)) {
-                            errors.error("Selection choice label text and image uri are both missing for: " + elementPath + " choice: " + (i+1) + ".\n");
+                            FormEntryCaption.TEXT_FORM_IMAGE);
+                        if ((text == null || text.trim().length() == 0) &&
+                            (image == null || image.trim().length() == 0)) {
+                            errors.error("Selection choice label text and image uri are both missing for: " + elementPath + " choice: " + (i + 1) + ".\n");
                         }
-                        if ( s.getValue() == null || s.getValue().trim().length() == 0) {
+                        if (s.getValue() == null || s.getValue().trim().length() == 0) {
                             outcome = true;
                             setError(true);
-                            errors.error("Selection value is missing for: " + elementPath + " choice: " + (i+1) + ". The XML is invalid.\n");
+                            errors.error("Selection value is missing for: " + elementPath + " choice: " + (i + 1) + ". The XML is invalid.\n");
                         }
                     }
                 }
@@ -353,12 +350,12 @@ public class FormValidator implements ActionListener {
             }
 
             if (inError) {
-               if (failFast) {
+                if (failFast) {
                     break;
-               } else {
-                   failed.add(path);
-                   setError(false);
-               }
+                } else {
+                    failed.add(path);
+                    setError(false);
+                }
             }
         }
 
@@ -377,7 +374,7 @@ public class FormValidator implements ActionListener {
         }
     }
 
-  public void validate(String path) {
+    public void validate(String path) {
         File src = new File(path);
         if (!src.exists()) {
             setError(true);
@@ -425,99 +422,100 @@ public class FormValidator implements ActionListener {
 
     public void validate(byte[] xformData) {
         // validate well formed xml
-            // errors.info("Checking form...");
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            try {
-                factory.newDocumentBuilder().parse(new ByteArrayInputStream(xformData));
-            } catch (Exception e) {
+        // errors.info("Checking form...");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        try {
+            factory.newDocumentBuilder().parse(new ByteArrayInputStream(xformData));
+        } catch (Exception e) {
+            setError(true);
+            errors.error("\n\n\n>> XML is invalid.", e);
+            return;
+        }
+
+        // need a list of classes that formdef uses
+        // unfortunately, the JR registerModule() functions do more than this.
+        // register just the classes that would have been registered by:
+        // new JavaRosaCoreModule().registerModule();
+        // new CoreModelModule().registerModule();
+        // replace with direct call to PrototypeManager
+        PrototypeManager.registerPrototypes(SERIALIABLE_CLASSES);
+        // initialize XForms module
+        new XFormsModule().registerModule();
+
+        // needed to override rms property manager
+        org.javarosa.core.services.PropertyManager
+            .setPropertyManager(new StubPropertyManager());
+
+        // For forms with external secondary instances
+        final ReferenceManager referenceManager = ReferenceManager.instance();
+        referenceManager.addReferenceFactory(new StubReferenceFactory());
+
+        PrototypeManager.registerPrototype("org.opendatakit.validate.StubSetGeopointAction");
+        XFormParser.registerActionHandler(StubSetGeopointActionHandler.ELEMENT_NAME, new StubSetGeopointActionHandler());
+
+        // validate if the xform can be parsed.
+        try {
+            FormDef fd = XFormUtils.getFormFromInputStream(new ByteArrayInputStream(xformData));
+            if (fd == null) {
                 setError(true);
-                errors.error("\n\n\n>> XML is invalid.",e);
+                errors.error("\n\n\n>> Something broke the parser. Try again.");
                 return;
             }
 
-            // need a list of classes that formdef uses
-            // unfortunately, the JR registerModule() functions do more than this.
-            // register just the classes that would have been registered by:
-            // new JavaRosaCoreModule().registerModule();
-            // new CoreModelModule().registerModule();
-            // replace with direct call to PrototypeManager
-            PrototypeManager.registerPrototypes(SERIALIABLE_CLASSES);
-            // initialize XForms module
-            new XFormsModule().registerModule();
+            // make sure properties get loaded
+            fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
 
-            // needed to override rms property manager
-            org.javarosa.core.services.PropertyManager
-                    .setPropertyManager(new StubPropertyManager());
+            // update evaluation context for function handlers
+            fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
 
-            // For forms with external secondary instances
-            final ReferenceManager referenceManager = ReferenceManager.instance();
-            referenceManager.addReferenceFactory(new StubReferenceFactory());
-
-            PrototypeManager.registerPrototype("org.opendatakit.validate.StubSetGeopointAction");
-            XFormParser.registerActionHandler(StubSetGeopointActionHandler.ELEMENT_NAME, new StubSetGeopointActionHandler());
-
-            // validate if the xform can be parsed.
-            try {
-                FormDef fd = XFormUtils.getFormFromInputStream(new ByteArrayInputStream(xformData));
-                if (fd == null) {
-                    setError(true);
-                    errors.error("\n\n\n>> Something broke the parser. Try again.");
-                    return;
+                public String getName() {
+                    return "pulldata";
                 }
 
-                // make sure properties get loaded
-                fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
-
-                // update evaluation context for function handlers
-                fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
-
-                    public String getName() {
-                        return "pulldata";
-                    }
-
-                    public List<Class[]> getPrototypes() {
-                        return new ArrayList<Class[]>();
-                    }
-
-                    public boolean rawArgs() {
-                        return true;
-                    }
-
-                    public boolean realTime() {
-                        return false;
-                    }
-
-                    public Object eval(Object[] args, EvaluationContext ec) {
-                        // no actual implementation here -- just a stub to facilitate validation
-                        return args[0];
-                    }});
-
-                // check for runtime errors
-                fd.initialize(true, new InstanceInitializationFactory());
-
-                errors.info("\n\n>> Xform parsing completed!\n");
-
-                // create FormEntryController from formdef
-                FormEntryModel fem = new FormEntryModel(fd);
-
-                // and try to step through the form...
-                if ( stepThroughEntireForm(fem) ) {
-                    setError(true);
-                    errors.error("\n\n>> Xform is invalid!");
-                } else {
-                    errors.info("\n\n>> Xform is valid!");
+                public List<Class[]> getPrototypes() {
+                    return new ArrayList<Class[]>();
                 }
 
-            } catch (XFormParseException e) {
-                setError(true);
-                errors.error("\n\n>> XForm is invalid.",e);
+                public boolean rawArgs() {
+                    return true;
+                }
 
-            } catch (Exception e) {
-                setError(true);
-                errors.error("\n\n>> Something broke the parser.",e);
+                public boolean realTime() {
+                    return false;
+                }
 
+                public Object eval(Object[] args, EvaluationContext ec) {
+                    // no actual implementation here -- just a stub to facilitate validation
+                    return args[0];
+                }
+            });
+
+            // check for runtime errors
+            fd.initialize(true, new InstanceInitializationFactory());
+
+            errors.info("\n\n>> Xform parsing completed!\n");
+
+            // create FormEntryController from formdef
+            FormEntryModel fem = new FormEntryModel(fd);
+
+            // and try to step through the form...
+            if (stepThroughEntireForm(fem)) {
+                setError(true);
+                errors.error("\n\n>> Xform is invalid!");
+            } else {
+                errors.info("\n\n>> Xform is valid!");
             }
+
+        } catch (XFormParseException e) {
+            setError(true);
+            errors.error("\n\n>> XForm is invalid.", e);
+
+        } catch (Exception e) {
+            setError(true);
+            errors.error("\n\n>> Something broke the parser.", e);
+
+        }
 
     }
 
@@ -533,8 +531,8 @@ public class FormValidator implements ActionListener {
         return baos.toByteArray();
     }
 
-    public FormValidator setErrorListener(ErrorListener listener){
-        if(listener == null){
+    public FormValidator setErrorListener(ErrorListener listener) {
+        if (listener == null) {
             throw new NullPointerException("Cannot set a null error listener");
         }
         this.errors = listener;
