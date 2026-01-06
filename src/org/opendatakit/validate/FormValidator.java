@@ -420,19 +420,7 @@ public class FormValidator implements ActionListener {
         }
     }
 
-    public void validate(byte[] xformData) {
-        // validate well formed xml
-        // errors.info("Checking form...");
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        try {
-            factory.newDocumentBuilder().parse(new ByteArrayInputStream(xformData));
-        } catch (Exception e) {
-            setError(true);
-            errors.error("\n\n\n>> XML is invalid.", e);
-            return;
-        }
-
+    public void validate(FormDef fd) {
         // need a list of classes that formdef uses
         // unfortunately, the JR registerModule() functions do more than this.
         // register just the classes that would have been registered by:
@@ -454,44 +442,37 @@ public class FormValidator implements ActionListener {
         PrototypeManager.registerPrototype("org.opendatakit.validate.StubSetGeopointAction");
         XFormParser.registerActionHandler(StubSetGeopointActionHandler.ELEMENT_NAME, new StubSetGeopointActionHandler());
 
-        // validate if the xform can be parsed.
-        try {
-            FormDef fd = XFormUtils.getFormFromInputStream(new ByteArrayInputStream(xformData));
-            if (fd == null) {
-                setError(true);
-                errors.error("\n\n\n>> Something broke the parser. Try again.");
-                return;
+
+        // make sure properties get loaded
+        fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
+
+        // update evaluation context for function handlers
+        fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
+
+            public String getName() {
+                return "pulldata";
             }
 
-            // make sure properties get loaded
-            fd.getPreloader().addPreloadHandler(new FakePreloadHandler("property"));
+            public List<Class[]> getPrototypes() {
+                return new ArrayList<Class[]>();
+            }
 
-            // update evaluation context for function handlers
-            fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
+            public boolean rawArgs() {
+                return true;
+            }
 
-                public String getName() {
-                    return "pulldata";
-                }
+            public boolean realTime() {
+                return false;
+            }
 
-                public List<Class[]> getPrototypes() {
-                    return new ArrayList<Class[]>();
-                }
+            public Object eval(Object[] args, EvaluationContext ec) {
+                // no actual implementation here -- just a stub to facilitate validation
+                return args[0];
+            }
+        });
 
-                public boolean rawArgs() {
-                    return true;
-                }
-
-                public boolean realTime() {
-                    return false;
-                }
-
-                public Object eval(Object[] args, EvaluationContext ec) {
-                    // no actual implementation here -- just a stub to facilitate validation
-                    return args[0];
-                }
-            });
-
-            // check for runtime errors
+        // check for runtime errors
+        try {
             fd.initialize(true, new InstanceInitializationFactory());
 
             errors.info("\n\n>> Xform parsing completed!\n");
@@ -506,17 +487,44 @@ public class FormValidator implements ActionListener {
             } else {
                 errors.info("\n\n>> Xform is valid!");
             }
+        } catch (InvalidReferenceException e) {
+            setError(true);
+            errors.error("\n\n>> " + e.getMessage() + ": " + e.getInvalidReference());
+        } catch (Exception e) {
+            setError(true);
+            errors.error("\n\n>> Xform is invalid!", e);
+        }
+    }
 
+    public void validate(byte[] xformData) {
+        // validate well formed xml
+        // errors.info("Checking form...");
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        try {
+            factory.newDocumentBuilder().parse(new ByteArrayInputStream(xformData));
+        } catch (Exception e) {
+            setError(true);
+            errors.error("\n\n\n>> XML is invalid.", e);
+            return;
+        }
+
+        // validate if the xform can be parsed.
+        try {
+            FormDef fd = XFormUtils.getFormFromInputStream(new ByteArrayInputStream(xformData));
+            if (fd == null) {
+                setError(true);
+                errors.error("\n\n\n>> Something broke the parser. Try again.");
+                return;
+            }
+            validate(fd);
         } catch (XFormParseException e) {
             setError(true);
             errors.error("\n\n>> XForm is invalid.", e);
-
         } catch (Exception e) {
             setError(true);
             errors.error("\n\n>> Something broke the parser.", e);
-
         }
-
     }
 
     private byte[] copyToByteArray(InputStream input) throws IOException {
@@ -539,33 +547,33 @@ public class FormValidator implements ActionListener {
         return this;
     }
 
-    private class FakePreloadHandler implements IPreloadHandler {
+private class FakePreloadHandler implements IPreloadHandler {
 
-        String preloadHandled;
-
-
-        public FakePreloadHandler(String preloadHandled) {
-            this.preloadHandled = preloadHandled;
-        }
+    String preloadHandled;
 
 
-        public boolean handlePostProcess(TreeElement arg0, String arg1) {
-            // TODO Auto-generated method stub
-            return false;
-        }
-
-
-        public IAnswerData handlePreload(String arg0) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-
-        public String preloadHandled() {
-            // TODO Auto-generated method stub
-            return preloadHandled;
-        }
-
+    public FakePreloadHandler(String preloadHandled) {
+        this.preloadHandled = preloadHandled;
     }
+
+
+    public boolean handlePostProcess(TreeElement arg0, String arg1) {
+        // TODO Auto-generated method stub
+        return false;
+    }
+
+
+    public IAnswerData handlePreload(String arg0) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
+    public String preloadHandled() {
+        // TODO Auto-generated method stub
+        return preloadHandled;
+    }
+
+}
 
 }
