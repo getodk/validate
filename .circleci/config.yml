@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: ~/work
     docker:
-      - image: circleci/openjdk:latest
+      - image: cimg/openjdk:8.0
     steps:
       - checkout
       - restore_cache:
