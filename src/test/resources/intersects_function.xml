@@ -11,7 +11,7 @@
                     <calc/>
                 </data>
             </instance>
-            <bind nodeset="/data/calc" calculate="intersects(/data/q1)" type="string"/>
+            <bind nodeset="/data/calc" calculate="if(intersects(/data/q1), 'y', 'n')" type="string"/>
         </model>
     </h:head>
     <h:body>

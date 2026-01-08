@@ -500,7 +500,7 @@ public class FormValidator implements ActionListener {
                     }
 
                     public List<Class[]> getPrototypes() {
-                        return new ArrayList<Class[]>();
+                        return new ArrayList<>();
                     }
 
                     public boolean rawArgs() {
@@ -513,7 +513,7 @@ public class FormValidator implements ActionListener {
 
                     public Object eval(Object[] args, EvaluationContext ec) {
                         // stub for validation
-                        return args[0];
+                        return true;
                     }
                 });
 
