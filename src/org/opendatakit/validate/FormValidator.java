@@ -476,8 +476,8 @@ public class FormValidator implements ActionListener {
                         return "pulldata";
                     }
 
-                    public List<Class[]> getPrototypes() {
-                        return new ArrayList<Class[]>();
+                    public List<Class<?>[]> getPrototypes() {
+                        return new ArrayList<>();
                     }
 
                     public boolean rawArgs() {
@@ -499,7 +499,7 @@ public class FormValidator implements ActionListener {
                         return "intersects";
                     }
 
-                    public List<Class[]> getPrototypes() {
+                    public List<Class<?>[]> getPrototypes() {
                         return new ArrayList<>();
                     }
 
