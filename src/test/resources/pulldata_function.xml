@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:h="http://www.w3.org/1999/xhtml"
+  xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+  xmlns:jr="http://openrosa.org/javarosa" xmlns:orx="http://openrosa.org/xforms"
+  xmlns:odk="http://www.opendatakit.org/xforms">
+  <h:head>
+    <h:title>properties</h:title>
+    <model odk:xforms-version="1.0.0">
+      <instance>
+        <data id="properties_error" version="20241024131522">
+          <general_info>
+            <id />
+            <cal_polygon />
+            <property />
+          </general_info>
+          <meta>
+            <instanceID />
+          </meta>
+        </data>
+      </instance>
+      <instance id="properties" src="jr://file-csv/properties.csv" />
+      <bind nodeset="/data/general_info/id" type="string" required="true()" />
+      <bind nodeset="/data/general_info/cal_polygon" type="string"
+        calculate="pulldata('properties', 'polygon', 'id',  /data/general_info/id )" />
+      <bind nodeset="/data/general_info/property" type="geoshape" readonly="true()"
+        calculate=" /data/general_info/cal_polygon " />
+      <bind nodeset="/data/meta/instanceID" type="string" readonly="true()" jr:preload="uid" />
+    </model>
+  </h:head>
+  <h:body>
+    <group ref="/data/general_info">
+      <label>General Information</label>
+      <input appearance="hide-input" ref="/data/general_info/property">
+        <label>Property</label>
+      </input>
+    </group>
+  </h:body>
+</h:html>

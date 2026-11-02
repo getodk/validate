@@ -19,5 +19,16 @@ public class CollectFunctionHandlerTest {
         Output output = Output.runAndGet(() -> validator.validate(path.toString()));
         assertThat(output.getErr(), isEmptyString());
         assertThat(output.getStd(), containsString("Xform is valid"));
+
+    }
+
+    @Test
+    public void acceptsPulldata() throws URISyntaxException {
+        final Path path = TestUtils.getPathOf("pulldata_function.xml");
+        final FormValidator validator = new FormValidator();
+
+        Output output = Output.runAndGet(() -> validator.validate(path.toString()));
+        assertThat(output.getErr(), isEmptyString());
+        assertThat(output.getStd(), containsString("Xform is valid"));
     }
 }

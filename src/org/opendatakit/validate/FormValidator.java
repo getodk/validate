@@ -490,7 +490,7 @@ public class FormValidator implements ActionListener {
 
                     public Object eval(Object[] args, EvaluationContext ec) {
                         // no actual implementation here -- just a stub to facilitate validation
-                        return args[0];
+                        return "";
                     }});
 
                 fd.getEvaluationContext().addFunctionHandler(new IFunctionHandler() {
