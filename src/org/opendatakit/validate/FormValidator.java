@@ -127,6 +127,8 @@ public class FormValidator implements ActionListener {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             if (args.length == 0) {
                 new FormValidator().show();
+            } else if (args.length == 1 && args[0].equals("-")) {
+                new FormValidator().validate(System.in);
             } else {
                 List<String> paths = new ArrayList<>();
                 boolean failFast = false;
