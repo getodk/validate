@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+imageTag="gradlew-jdk-8"
+
+log() { echo >&2 "[gradle-docker] $*"; }
+
+rebuildImage=false
+if [[ -n "${REBUILD_GRADLE_DOCKER_IMAGE-}" ]]; then
+  rebuildImage=true
+fi
+
+log "Checking for existing image..."
+if [[ "$rebuildImage" = false ]] && docker image inspect "$imageTag" >/dev/null 2>&1; then
+  log "Existing image found."
+else
+  log "Building docker image..."
+  docker build --tag "$imageTag" --file - . <<EOF
+FROM eclipse-temurin:8-jdk
+WORKDIR /app
+ENV GRADLE_USER_HOME=/app/.gradle-docker-cache
+ENTRYPOINT ["/app/gradlew"]
+EOF
+  log "Docker image built."
+fi
+
+currentUser="$(id -u):$(id -g)" # ensure ownership of docker-created files
+exec docker run --rm \
+    --user "$currentUser" \
+    --volume "$PWD":/app \
+    "$imageTag" \
+    "$@"
