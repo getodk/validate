@@ -29,6 +29,10 @@ sourceCompatibility = '1.8'
 dependencies {
     compile group: 'net.sf.kxml', name: 'kxml2', version: '2.3.0'
     compile (group: 'org.getodk', name: 'javarosa', version: '6.0.0')
+    compile platform('com.fasterxml.jackson:jackson-bom:2.22.3')
+    constraints {
+        compile 'commons-io:commons-io:2.14.0'
+    }
     compile group: 'org.slf4j', name: 'slf4j-nop', version: '1.7.25'
     testCompile 'junit:junit:4.13.2'
     testCompile 'org.hamcrest:hamcrest-all:1.3'
